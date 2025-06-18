@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eu.bittrade.libs.steemj.fc.TimePointSec;
@@ -83,6 +84,7 @@ public class Account {
     @JsonProperty("savings_balance")
     private LegacyAsset savingsBalance;
     @JsonProperty("sbd_balance")
+    @JsonAlias("hbd_balance") 
     private LegacyAsset sbdBalance;
     @JsonProperty("sbd_seconds")
     private BigInteger sbdSeconds;

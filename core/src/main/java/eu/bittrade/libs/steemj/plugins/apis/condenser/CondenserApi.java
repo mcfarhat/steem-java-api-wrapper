@@ -16,6 +16,7 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.condenser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.bittrade.libs.steemj.base.models.Permlink;
@@ -29,6 +30,7 @@ import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
 import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
+import eu.bittrade.libs.steemj.protocol.AccountName;
 
 /**
  * This class implements the "condenser_api".
@@ -90,12 +92,45 @@ public class CondenserApi {
      *             <li>If the Server returned an error object.</li>
      *             </ul>
      */
-    public static List<ExtendedAccount> getAccounts(CommunicationHandler communicationHandler)
-            throws SteemCommunicationException, SteemResponseException {
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.CONDENSER_API, RequestMethod.GET_ACCOUNTS, null);
+   // Make sure these imports are present at the top of CondenserApi.java if not already
+// import java.util.ArrayList;
+// import java.util.List;
+// import eu.bittrade.libs.steemj.protocol.AccountName; // Assuming this is the correct AccountName
+// import com.google.common.collect.Lists; // For Lists.newArrayList convenience
 
-        return communicationHandler.performRequest(requestObject, ExtendedAccount.class);
+public static List<ExtendedAccount> getAccounts(CommunicationHandler communicationHandler, List<AccountName> accountNames)
+            throws SteemCommunicationException, SteemResponseException {
+    if (communicationHandler == null) {
+        // Or throw a more specific exception, or handle as per library's pattern
+        throw new SteemCommunicationException("CommunicationHandler cannot be null.");
     }
+    if (accountNames == null || accountNames.isEmpty()) {
+        // Return empty list or throw IllegalArgumentException if no names are provided
+        return new ArrayList<>();
+    }
+
+    List<String> accountNameStrings = new ArrayList<>();
+    for (AccountName accName : accountNames) {
+        accountNameStrings.add(accName.getName());
+    }
+
+    // The condenser_api.get_accounts method expects parameters in the format: [["name1", "name2", ...]]
+    // So, the 'params' itself is an array containing one element, which is the list of account name strings.
+    Object[] params = { accountNameStrings };
+    // Note: Some libraries might require Lists.newArrayList(accountNameStrings) if the JsonRPCRequest
+    // class is very specific about a List<List<String>> type structure.
+    // However, new Object[]{ list } is a common way to pass a single array/list parameter in JSON-RPC.
+    // We can test this; if it fails, we might need to wrap accountNameStrings in another list:
+    // Object[] params = { Lists.newArrayList(accountNameStrings) }; // More explicit [[...]] structure
+
+    JsonRPCRequest requestObject = new JsonRPCRequest(
+            SteemApiType.CONDENSER_API,
+            RequestMethod.GET_ACCOUNTS, // Assuming this maps to "get_accounts"
+            params // Pass the formatted parameters
+    );
+
+    return communicationHandler.performRequest(requestObject, ExtendedAccount.class);
+}
 
     /**
      * This API is a short-cut for returning all of the state required for a

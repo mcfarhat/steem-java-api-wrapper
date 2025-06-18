@@ -35,5 +35,14 @@ public enum LegacyAssetSymbolType {
     /** Steem Backed Dollar Symbol for the test network */
     TBD,
     /** Steem Dollar Symbol for the test network */
-    TSTD
+    TSTD,
+    // ---------- ADDED FOR HIVE SUPPORT ----------
+    /** Hive Power (HP) Symbol - equivalent to VESTS conceptually */
+    // VESTS is already present and typically used for Hive Power as well.
+    // No separate HP symbol usually needed here if VESTS is used for HP.
+
+    /** Hive Symbol */
+    HIVE,
+    /** Hive Backed Dollar (HBD) Symbol */
+    HBD;
 }
