@@ -1,23 +1,21 @@
 package my.sample.project;
 
-import eu.bittrade.libs.steemj.SteemJ;
-import eu.bittrade.libs.steemj.configuration.SteemJConfig;
-import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
-import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.protocol.AccountName;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
-// Removed unused imports for now
-// import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
-// import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
-// import org.joou.UInteger;
-// import org.joou.ULong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.bittrade.libs.steemj.SteemJ;
+import eu.bittrade.libs.steemj.configuration.SteemJConfig;
+import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
+import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
+import eu.bittrade.libs.steemj.protocol.AccountName;
 // import java.util.Map; // Not needed as account history is commented out
 
 public class GetMyHiveData {
@@ -30,22 +28,32 @@ public class GetMyHiveData {
         myConfig.setResponseTimeout(100000); // Set a reasonable timeout
 
         String hiveNodeHttpUrl = "https://anyx.io"; // Using a different node, with HTTPS
-        try {
-            myConfig.getEndpointURIs().clear(); // Clear existing default URIs
-            myConfig.addEndpointURI(new URI(hiveNodeHttpUrl));
-            LOGGER.info("Configured endpoint URI: {}", hiveNodeHttpUrl);
+        // Inside your main method, before creating the SteemJ instance:
 
-            // Explicitly set Hive chain ID - good practice, especially if library might default to Steem
+        try {
+            // Create a list of endpoint URIs for failover
+            List<Pair<URI, Boolean>> endpoints = new ArrayList<>();
+            // Add multiple, reliable Hive nodes. The library will try them in order.
+            endpoints.add(new ImmutablePair<>(new URI("https://api.hive.blog"), true));
+            endpoints.add(new ImmutablePair<>(new URI("https://anyx.io"), true));
+            endpoints.add(new ImmutablePair<>(new URI("https://api.deathwing.me"), true));
+            endpoints.add(new ImmutablePair<>(new URI("https://rpc.ecency.com"), true));
+            
+            // Set the entire list of endpoints in the configuration
+            myConfig.setEndpointURIs(endpoints);
+            LOGGER.info("Configured failover endpoints. Primary: {}", endpoints.get(0).getLeft());
+
+            // You still need to set the Chain ID
             myConfig.setChainId("beeab0de00000000000000000000000000000000000000000000000000000000");
             LOGGER.info("Set Chain ID for Hive.");
 
         } catch (URISyntaxException e) {
-            LOGGER.error("URISyntaxException for node '{}': {}", hiveNodeHttpUrl, e.getMessage(), e);
-            return; // Exit if URI is invalid
+            LOGGER.error("URISyntaxException in one of the predefined nodes.", e);
+            return;
         }
 
         // Your Hive account name - REPLACE THIS IF NEEDED
-        AccountName myHiveAccountName = new AccountName("milk21");
+        AccountName myHiveAccountName = new AccountName("omarghadban");
         myConfig.setDefaultAccount(myHiveAccountName);
         LOGGER.info("Default account set to: {}", myConfig.getDefaultAccount().getName());
 
