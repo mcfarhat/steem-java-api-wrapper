@@ -60,7 +60,6 @@ import eu.bittrade.libs.steemj.plugins.apis.database.models.GetPotentialSignatur
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetPotentialSignaturesReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetRequiredSignaturesArgs;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetRequiredSignaturesReturn;
-import eu.bittrade.libs.steemj.plugins.apis.database.models.GetSmtNextIdentifierReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetTransactionHexArgs;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetTransactionHexReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.HardforkProperty;
@@ -682,7 +681,7 @@ public class DatabaseApi {
             ListSbdConversionRequestsArgs listSbdConversionRequestsArgs)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.LIST_SBD_CONVERSION_REQUESTS, listSbdConversionRequestsArgs);
+                RequestMethod.LIST_HBD_CONVERSION_REQUESTS, listSbdConversionRequestsArgs);
 
         return communicationHandler.performRequest(requestObject, ListSbdConversionRequestsReturn.class).get(0);
     }
@@ -699,7 +698,7 @@ public class DatabaseApi {
             FindSbdConversionRequestsArgs findSbdConversionRequestsArgs)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.FIND_SBD_CONVERSION_REQUESTS, findSbdConversionRequestsArgs);
+                RequestMethod.FIND_HBD_CONVERSION_REQUESTS, findSbdConversionRequestsArgs);
 
         return communicationHandler.performRequest(requestObject, FindSbdConversionRequestsReturn.class).get(0);
     }
@@ -959,11 +958,5 @@ public class DatabaseApi {
      * @throws SteemCommunicationException
      * @throws SteemResponseException
      */
-    public static GetSmtNextIdentifierReturn getSmtNextIdentifier(CommunicationHandler communicationHandler)
-            throws SteemCommunicationException, SteemResponseException {
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.GET_SMT_NEXT_IDENTIFIER, null);
-
-        return communicationHandler.performRequest(requestObject, GetSmtNextIdentifierReturn.class).get(0);
-    }
+    
 }

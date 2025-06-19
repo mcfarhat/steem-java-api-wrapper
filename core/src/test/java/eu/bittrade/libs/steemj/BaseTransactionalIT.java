@@ -17,12 +17,7 @@
 package eu.bittrade.libs.steemj;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
@@ -32,11 +27,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 
 import eu.bittrade.libs.steemj.chain.SignedTransaction;
 import eu.bittrade.libs.steemj.communication.HttpClientRequestInitializer;
-import eu.bittrade.libs.steemj.enums.AddressPrefixType;
-import eu.bittrade.libs.steemj.enums.PrivateKeyType;
-import eu.bittrade.libs.steemj.enums.ValidationType;
-import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
-import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 
 /**
@@ -70,102 +60,7 @@ public abstract class BaseTransactionalIT extends BaseIT {
     /**
      * Setup the test environment for transaction related tests.
      */
-    protected static void setupIntegrationTestEnvironmentForTransactionalTests(String mode, String endpoint) {
-        setupIntegrationTestEnvironment();
-
-        if (TEST_ENDPOINT == null) {
-            TEST_ENDPOINT = endpoint;
-        }
-        if (TEST_MODE == null) {
-            TEST_MODE = mode;
-        }
-
-        // The expiration date used for tests is way to old in general -
-        // Therefore the validation needs to be disabled.
-        ArrayList<ValidationType> validationsToSkip = new ArrayList<>();
-        validationsToSkip.add(ValidationType.SKIP_VALIDATION);
-        config.setValidationsToSkip(validationsToSkip);
-
-        try {
-            if (TEST_ENDPOINT.equals(TESTNET_ENDPOINT_IDENTIFIER)) {
-                // Configure SteemJ to work against the TestNet.
-                config.setChainId("79276aea5d4877d9a25892eaa01b0adf019d3e5cb12a97478df3298ccdd01673");
-                config.setAddressPrefix(AddressPrefixType.STX);
-
-                try {
-                    if (TEST_MODE.equals(HTTP_MODE_IDENTIFIER)) {
-                        configureTestNetHttpEndpoint();
-                    } else if (TEST_MODE.equals(WEBSOCKET_MODE_IDENTIFIER)) {
-                        configureTestNetWebsocketEndpoint();
-                    } else {
-                        LOGGER.error("Unknown Test Mode {}. - Test execution stopped.", TEST_MODE);
-                    }
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("Unable to start test due to a wrong endpoint URI.");
-                }
-
-                try {
-                    createTestNetAccount(STEEMJ_ACCOUNT_NAME.getName(), STEEMJ_PASSWORD);
-                    createTestNetAccount(DEZ_ACCOUNT_NAME.getName(), DEZ_PASSWORD);
-                    // Fille the private key storage.
-                    List<ImmutablePair<PrivateKeyType, String>> privateKeys = new ArrayList<>();
-
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.POSTING, SteemJ
-                            .getPrivateKeyFromPassword(STEEMJ_ACCOUNT_NAME, PrivateKeyType.POSTING, STEEMJ_PASSWORD)
-                            .getRight()));
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.ACTIVE, SteemJ
-                            .getPrivateKeyFromPassword(STEEMJ_ACCOUNT_NAME, PrivateKeyType.ACTIVE, STEEMJ_PASSWORD)
-                            .getRight()));
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.OWNER,
-                            SteemJ.getPrivateKeyFromPassword(STEEMJ_ACCOUNT_NAME, PrivateKeyType.OWNER, STEEMJ_PASSWORD)
-                                    .getRight()));
-
-                    config.getPrivateKeyStorage().addAccount(STEEMJ_ACCOUNT_NAME, privateKeys);
-
-                    privateKeys = new ArrayList<>();
-
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.POSTING,
-                            SteemJ.getPrivateKeyFromPassword(DEZ_ACCOUNT_NAME, PrivateKeyType.POSTING, DEZ_PASSWORD)
-                                    .getRight()));
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.ACTIVE,
-                            SteemJ.getPrivateKeyFromPassword(DEZ_ACCOUNT_NAME, PrivateKeyType.ACTIVE, DEZ_PASSWORD)
-                                    .getRight()));
-                    privateKeys.add(new ImmutablePair<>(PrivateKeyType.OWNER,
-                            SteemJ.getPrivateKeyFromPassword(DEZ_ACCOUNT_NAME, PrivateKeyType.OWNER, DEZ_PASSWORD)
-                                    .getRight()));
-
-                    config.getPrivateKeyStorage().addAccount(DEZ_ACCOUNT_NAME, privateKeys);
-                } catch (IOException | GeneralSecurityException e) {
-                    throw new RuntimeException("Could not create TestNet accounts. - Test execution stopped.", e);
-                }
-            } else if (TEST_ENDPOINT.equals(STEEMNET_ENDPOINT_IDENTIFIER)) {
-                /*
-                 * If running against the real Steem Blockchain an existing
-                 * account with real private keys is required. This mode can
-                 * currently only be used by @dez1337 as most of the integration
-                 * tests are written for his account.
-                 */
-                try {
-                    if (TEST_MODE.equals(HTTP_MODE_IDENTIFIER)) {
-                        // Do nothing as this is the default.
-                    } else if (TEST_MODE.equals(WEBSOCKET_MODE_IDENTIFIER)) {
-                        configureSteemWebSocketEndpoint();
-                    } else {
-                        LOGGER.error("Unknown Test Mode {}. - Test execution stopped.", TEST_MODE);
-                    }
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("Unable to start test due to a wrong endpoint URI.");
-                }
-            } else {
-                LOGGER.error("Unknown Test Endpoint {}. - Test execution stopped.", TEST_ENDPOINT);
-            }
-
-            // Create a new instance to respect the settings made above.
-            steemJ = new SteemJ();
-        } catch (SteemCommunicationException | SteemResponseException e) {
-            throw new RuntimeException("Could not create a SteemJ instance. - Test execution stopped.", e);
-        }
-    }
+ 
 
     /**
      * Create a new TestNet account as described in the TestNet main page

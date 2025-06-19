@@ -22,5 +22,15 @@ package eu.bittrade.libs.steemj.enums;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public enum RewardFundType {
-    COMMENT, POST
+      /**
+     * The reward fund for content (authors and curators). On modern nodes,
+     * this is the primary content reward pool.
+     */
+    POST,
+    /**
+     * The reward fund for the Decentralized Hive Fund (DHF), also known as
+     * the proposal system. This fund pays for approved community proposals.
+     */
+    PROPOSAL
 }
+// done

@@ -27,7 +27,5 @@ public class BaseTransactionBroadcastIT extends BaseTransactionalIT {
     /**
      * Setup the test environment for transaction related tests.
      */
-    protected static void setupIntegrationTestEnvironmentForTransactionBroadcastTests(String mode, String endpoint) {
-        setupIntegrationTestEnvironmentForTransactionalTests(mode, endpoint);
-    }
+   
 }

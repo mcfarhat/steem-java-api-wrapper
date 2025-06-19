@@ -26,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eu.bittrade.libs.steemj.base.models.ChainProperties;
 import eu.bittrade.libs.steemj.base.models.Checksum;
-import eu.bittrade.libs.steemj.base.models.Pow;
 import eu.bittrade.libs.steemj.enums.PrivateKeyType;
 import eu.bittrade.libs.steemj.enums.ValidationType;
 import eu.bittrade.libs.steemj.exceptions.SteemInvalidTransactionException;
@@ -45,8 +44,7 @@ public class PowOperation extends Operation {
     private Checksum blockId;
     @JsonProperty("nonce")
     private ULong nonce;
-    @JsonProperty("work")
-    private Pow work;
+   
     @JsonProperty("props")
     private ChainProperties properties;
 
@@ -110,17 +108,13 @@ public class PowOperation extends Operation {
     /**
      * @return the work
      */
-    public Pow getWork() {
-        return work;
-    }
+   
 
     /**
      * @param work
      *            the work to set
      */
-    public void setWork(Pow work) {
-        this.work = work;
-    }
+
 
     /**
      * @return the properties

@@ -41,8 +41,8 @@ public class PowOperationIT extends BaseTransactionVerificationIT {
      */
     @BeforeClass()
     public static void prepareTestClass() throws Exception {
-        setupIntegrationTestEnvironmentForTransactionVerificationTests(HTTP_MODE_IDENTIFIER,
-                STEEMNET_ENDPOINT_IDENTIFIER);
+        
+        
     }
 
     @Category({ IntegrationTest.class })

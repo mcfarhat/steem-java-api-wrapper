@@ -131,7 +131,7 @@ public class SteemJConfig {
         this.timeZoneId = "GMT";
         this.encodingCharset = StandardCharsets.UTF_8;
         this.privateKeyStorage = new PrivateKeyStorage();
-        this.addressPrefix = AddressPrefixType.STM;
+        this.addressPrefix = AddressPrefixType.HIVE;
         this.chainId = "beeab0de00000000000000000000000000000000000000000000000000000000";
         this.steemJWeight = 0;
         this.validationsToSkip = new ArrayList<>();
