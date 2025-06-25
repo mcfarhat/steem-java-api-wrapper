@@ -25,9 +25,12 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 
 /**
- * This class represents a Steem "vesting_delegation_object" object.
+ * This class represents a Hive "vesting_delegation_object" object.
+ *
+ * HIVE-FORK-NOTE: The object structure is identical on Hive. The 'vesting_shares' 
+ * field represents VESTS (the underlying unit of Hive Power).
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class VestingDelegation {
     // Original type is "id_type" so we use long here.
@@ -129,3 +132,4 @@ public class VestingDelegation {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+//done

@@ -24,9 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 
 /**
- * This class represents a Steem "withdraw_vesting_route_object" object.
+ * This class represents a Hive "withdraw_vesting_route_object" object.
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * HIVE-FORK-NOTE: This object is functionally identical on Hive. It defines a
+ * route for powered-down HIVE to be sent to another account.
+ * 
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class WithdrawVestingRoutes {
     // Original type is "id_type" so we use long here.
@@ -90,3 +93,4 @@ public class WithdrawVestingRoutes {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+//done

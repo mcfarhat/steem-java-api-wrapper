@@ -25,9 +25,12 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 
 /**
- * This class represents a Steem "vesting_delegation_expiration_object" object.
+ * This class represents a Hive "vesting_delegation_expiration_object" object.
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * HIVE-FORK-NOTE: The object structure is identical on Hive. It is used to
+ * track the return of a Hive Power delegation during its cooldown period.
+ * 
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class VestingDelegationExpiration {
     // Original type is "id_type" so we use long here.
@@ -112,3 +115,4 @@ public class VestingDelegationExpiration {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+//done

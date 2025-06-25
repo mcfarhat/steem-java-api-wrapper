@@ -26,9 +26,13 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 
 /**
- * This class represents a Steem "escrow_object" object.
+ * This class represents a Hive "escrow_object" object.
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * HIVE-FORK-NOTE: The asset fields 'sbd_balance' and 'steem_balance' have been
+ * renamed to 'hbd_balance' and 'hive_balance' to match the Hive blockchain's
+ * currency names.
+ * 
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class EscrowObject {
     // Original type is "id_type" so we use long here.
@@ -46,10 +50,14 @@ public class EscrowObject {
     private TimePointSec ratificationDeadline;
     @JsonProperty("escrow_expiration")
     private TimePointSec escrowExpiration;
-    @JsonProperty("sbd_balance")
-    private LegacyAsset sbdBalance;
-    @JsonProperty("steem_balance")
-    private LegacyAsset steemBalance;
+    
+    // HIVE-FORK-CHANGE: Renamed from sbd_balance
+    @JsonProperty("hbd_balance")
+    private LegacyAsset hbdBalance;
+    // HIVE-FORK-CHANGE: Renamed from steem_balance
+    @JsonProperty("hive_balance")
+    private LegacyAsset hiveBalance;
+    
     @JsonProperty("pending_fee")
     private LegacyAsset pendingFee;
     @JsonProperty("to_approved")
@@ -122,17 +130,17 @@ public class EscrowObject {
     }
 
     /**
-     * @return the sbdBalance
+     * @return the hbdBalance
      */
-    public LegacyAsset getSbdBalance() {
-        return sbdBalance;
+    public LegacyAsset getHbdBalance() {
+        return hbdBalance;
     }
 
     /**
-     * @return the steemBalance
+     * @return the hiveBalance
      */
-    public LegacyAsset getSteemBalance() {
-        return steemBalance;
+    public LegacyAsset getHiveBalance() {
+        return hiveBalance;
     }
 
     /**
@@ -175,3 +183,4 @@ public class EscrowObject {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+//done
