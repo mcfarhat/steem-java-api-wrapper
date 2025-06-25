@@ -179,7 +179,7 @@ public class SteemJ {
     // ## ACCOUNT BY KEY API ###################################################
     // #########################################################################
 
-    public List<AccountName> getKeyReferences(List<PublicKey> publicKeys)
+    public List<List<AccountName>> getKeyReferences(List<PublicKey> publicKeys)
             throws SteemCommunicationException, SteemResponseException {
         return AccountByKeyApi.getKeyReferences(SteemJ.communicationHandler, new GetKeyReferencesArgs(publicKeys))
                 .getAccounts();

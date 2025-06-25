@@ -71,7 +71,7 @@ public class AccountByKeyApiIT extends BaseIT {
     @Category({ IntegrationTest.class })
     @Test
     public void testGetBlock() throws SteemCommunicationException, SteemResponseException {
-        final List<AccountName> accountList = AccountByKeyApi
+        final List<List<AccountName>> accountList = AccountByKeyApi
                 .getKeyReferences(COMMUNICATION_HANDLER,
                         new GetKeyReferencesArgs(
                                 Arrays.asList(new PublicKey("STM79rHgAa75LkJJrhhr4fSM8ccBoLwod3HaAAxzihNRFKZSvTvZ5"))))
