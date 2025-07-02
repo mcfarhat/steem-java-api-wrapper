@@ -57,7 +57,13 @@
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-	</dependencies>
+	
+   <dependency>
+     <groupId>org.apache.commons</groupId>
+     <artifactId>commons-lang3</artifactId>
+     <version>3.9</version>
+   </dependency>
+ </dependencies>
 
 	<build>
 		<plugins>
@@ -65,6 +71,16 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <!-- Here is your new class -->
+                <mainClass>my.sample.project.GetMyHiveData</mainClass>
+            </configuration>
+        </plugin>
 		</plugins>
 	</build>
 
