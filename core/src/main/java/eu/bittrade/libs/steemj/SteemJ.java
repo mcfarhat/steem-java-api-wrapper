@@ -18,30 +18,21 @@ package eu.bittrade.libs.steemj;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-// import java.util.UUID; // Marked as unused in previous warnings, can be removed if truly not used elsewhere
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
-// import org.joou.UByte; // Marked as unused in previous warnings
 import org.joou.UInteger;
 import org.joou.ULong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists; // Used in claimRewards, and now in calculateRemainingBandwidth
+import com.google.common.collect.Lists;
 
 import eu.bittrade.crypto.core.ECKey;
 import eu.bittrade.crypto.core.Sha256Hash;
-import eu.bittrade.libs.steemj.base.models.Account;
-// import eu.bittrade.libs.steemj.base.models.BeneficiaryRouteType; // Marked as unused
+import eu.bittrade.libs.steemj.base.models.Account; // Used in claimRewards, and now in calculateRemainingBandwidth
 import eu.bittrade.libs.steemj.base.models.ChainProperties;
-// import eu.bittrade.libs.steemj.base.models.CommentOptionsExtension; // Marked as unused
-// import eu.bittrade.libs.steemj.base.models.CommentPayoutBeneficiaries; // Marked as unused
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
-import eu.bittrade.libs.steemj.base.models.LiquidityBalance;
 import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.base.models.ScheduledHardfork;
 import eu.bittrade.libs.steemj.chain.SignedTransaction;
@@ -66,13 +57,13 @@ import eu.bittrade.libs.steemj.plugins.apis.block.BlockApi;
 import eu.bittrade.libs.steemj.plugins.apis.block.models.ExtendedSignedBlock;
 import eu.bittrade.libs.steemj.plugins.apis.block.models.GetBlockArgs;
 import eu.bittrade.libs.steemj.plugins.apis.block.models.GetBlockHeaderArgs;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.CondenserApi; // Make sure this is imported
+import eu.bittrade.libs.steemj.plugins.apis.condenser.CondenserApi;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount; // Make sure this is imported
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
-import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
+import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Config;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook;
@@ -90,8 +81,6 @@ import eu.bittrade.libs.steemj.plugins.apis.follow.models.FollowApiObject;
 import eu.bittrade.libs.steemj.plugins.apis.follow.models.FollowCountApiObject;
 import eu.bittrade.libs.steemj.plugins.apis.follow.models.GetFollowersArgs;
 import eu.bittrade.libs.steemj.plugins.apis.follow.models.PostsPerAuthorPair;
-import eu.bittrade.libs.steemj.plugins.apis.follow.models.operations.FollowOperation;
-import eu.bittrade.libs.steemj.plugins.apis.follow.models.operations.ReblogOperation;
 import eu.bittrade.libs.steemj.plugins.apis.market.history.MarketHistoryApi;
 import eu.bittrade.libs.steemj.plugins.apis.market.history.models.Bucket;
 import eu.bittrade.libs.steemj.plugins.apis.market.history.models.GetMarketHistoryArgs;
@@ -110,27 +99,15 @@ import eu.bittrade.libs.steemj.plugins.apis.tags.models.DiscussionQuery;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.GetActiveVotesArgs;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.Tag;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.VoteState;
-import eu.bittrade.libs.steemj.plugins.apis.witness.WitnessApi;
-import eu.bittrade.libs.steemj.plugins.apis.witness.models.AccountBandwidth;
-import eu.bittrade.libs.steemj.plugins.apis.witness.models.GetAccountBandwidthArgs;
-import eu.bittrade.libs.steemj.plugins.apis.witness.models.ReserveRatioObject;
-import eu.bittrade.libs.steemj.protocol.AccountName; // Make sure this is imported
-import eu.bittrade.libs.steemj.protocol.LegacyAsset;
+import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.BlockHeader;
+import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 import eu.bittrade.libs.steemj.protocol.Price;
 import eu.bittrade.libs.steemj.protocol.PublicKey;
 import eu.bittrade.libs.steemj.protocol.SignedBlock;
 import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
-import eu.bittrade.libs.steemj.protocol.operations.ClaimRewardBalanceOperation;
-import eu.bittrade.libs.steemj.protocol.operations.CommentOperation;
-// import eu.bittrade.libs.steemj.protocol.operations.CommentOptionsOperation; // Marked as unused
-import eu.bittrade.libs.steemj.protocol.operations.CustomJsonOperation;
-import eu.bittrade.libs.steemj.protocol.operations.DelegateVestingSharesOperation;
-import eu.bittrade.libs.steemj.protocol.operations.DeleteCommentOperation;
 import eu.bittrade.libs.steemj.protocol.operations.Operation;
-import eu.bittrade.libs.steemj.protocol.operations.TransferOperation;
 import eu.bittrade.libs.steemj.protocol.operations.VoteOperation;
-// import eu.bittrade.libs.steemj.util.CondenserUtils; // Marked as unused
 import eu.bittrade.libs.steemj.util.SteemJUtils;
 
 /**
@@ -541,14 +518,7 @@ public class SteemJ {
     // ## WITNESS API ##########################################################
     // #########################################################################
     
-    public Optional<AccountBandwidth> getAccountBandwidth(GetAccountBandwidthArgs getAccountBandwidthArgs)
-            throws SteemCommunicationException, SteemResponseException {
-        return WitnessApi.getAccountBandwidth(SteemJ.communicationHandler, getAccountBandwidthArgs).getBandwidth();
-    }
-
-    public ReserveRatioObject getReserveRatio() throws SteemCommunicationException, SteemResponseException {
-        return WitnessApi.getReserveRatio(SteemJ.communicationHandler);
-    }
+   
 
     // #########################################################################
     // ## UTILITY METHODS ######################################################
@@ -726,13 +696,7 @@ public class SteemJ {
 	 * Get the liquidity queue for a specified account.
 	 * // ... (rest of the file as it was) ...
 	 */
-	public static List<LiquidityBalance> getLiquidityQueue(AccountName accoutName, int limit) throws SteemCommunicationException, SteemResponseException {
-		Object[] parameters = { accoutName.getName(), String.valueOf(limit) };
-		// Accessing static field in a non-static way. Corrected:
-		JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_LIQUIDITY_QUEUE, parameters);
-		return SteemJ.communicationHandler.performRequest(requestObject, LiquidityBalance.class);
-	}
-
+	
 	/**
 	 * Get the hardfork version the node you are connected to is using.
 	 * // ... (rest of the file as it was) ...

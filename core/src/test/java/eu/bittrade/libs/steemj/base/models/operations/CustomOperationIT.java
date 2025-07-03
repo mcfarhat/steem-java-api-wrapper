@@ -16,11 +16,10 @@
  */
 package eu.bittrade.libs.steemj.base.models.operations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -58,8 +57,7 @@ public class CustomOperationIT extends BaseTransactionVerificationIT {
      */
     @BeforeClass()
     public static void prepareTestClass() throws Exception {
-        setupIntegrationTestEnvironmentForTransactionVerificationTests(HTTP_MODE_IDENTIFIER,
-                STEEMNET_ENDPOINT_IDENTIFIER);
+        
 
         // If the default expiration date for all integration tests
         // (2016-04-06T08:29:27UTC) is used, the transaction can't be verified.

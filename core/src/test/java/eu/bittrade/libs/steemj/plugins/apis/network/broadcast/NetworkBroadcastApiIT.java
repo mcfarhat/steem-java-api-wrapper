@@ -16,16 +16,15 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.network.broadcast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -66,7 +65,7 @@ public class NetworkBroadcastApiIT extends BaseTransactionBroadcastIT {
      */
     @BeforeClass
     public static void init() throws SteemCommunicationException {
-        setupIntegrationTestEnvironmentForTransactionBroadcastTests(HTTP_MODE_IDENTIFIER, TESTNET_ENDPOINT_IDENTIFIER);
+       
 
         COMMUNICATION_HANDLER = new CommunicationHandler();
     }

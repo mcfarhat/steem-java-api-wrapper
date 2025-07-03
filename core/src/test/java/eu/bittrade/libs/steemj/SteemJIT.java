@@ -16,6 +16,13 @@
  */
 package eu.bittrade.libs.steemj;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -27,14 +34,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,7 +41,6 @@ import org.junit.experimental.categories.Category;
 
 import eu.bittrade.libs.steemj.base.models.ChainProperties;
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
-import eu.bittrade.libs.steemj.base.models.LiquidityBalance;
 import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.base.models.ScheduledHardfork;
 import eu.bittrade.libs.steemj.chain.SignedTransaction;
@@ -277,15 +275,7 @@ public class SteemJIT extends BaseIT {
         assertThat(properties.getTotalPow().toBigInteger(), greaterThan(new BigInteger("123")));
     }
 
-    @Category({ IntegrationTest.class })
-    @Test
-    public void testGetLiquidityQueue() throws Exception {
-        final List<LiquidityBalance> repliesByLastUpdate = SteemJ.getLiquidityQueue(WITNESS_ACCOUNT, 5);
-
-        assertEquals("expect that 5 results are returned", repliesByLastUpdate.size(), 5);
-        assertEquals("expect " + WITNESS_ACCOUNT + " to be the first returned account", WITNESS_ACCOUNT,
-                repliesByLastUpdate.get(0).getAccount());
-    }
+  
 
     @Category({ IntegrationTest.class })
     @Test

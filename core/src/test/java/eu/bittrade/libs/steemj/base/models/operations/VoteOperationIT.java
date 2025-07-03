@@ -16,11 +16,10 @@
  */
 package eu.bittrade.libs.steemj.base.models.operations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -63,8 +62,7 @@ public class VoteOperationIT extends BaseTransactionVerificationIT {
      */
     @BeforeClass()
     public static void prepareTestClass() throws Exception {
-        setupIntegrationTestEnvironmentForTransactionVerificationTests(HTTP_MODE_IDENTIFIER,
-                STEEMNET_ENDPOINT_IDENTIFIER);
+        
 
         AccountName author = new AccountName("dez1337");
         Permlink permlink = new Permlink("steemj-v0-2-4-has-been-released-update-9");

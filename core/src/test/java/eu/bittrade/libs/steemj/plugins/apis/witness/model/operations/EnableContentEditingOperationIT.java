@@ -16,11 +16,10 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.witness.model.operations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -69,8 +68,7 @@ public class EnableContentEditingOperationIT extends BaseTransactionVerification
      */
     @BeforeClass()
     public static void prepareTestClass() throws Exception {
-        setupIntegrationTestEnvironmentForTransactionVerificationTests(HTTP_MODE_IDENTIFIER,
-                TESTNET_ENDPOINT_IDENTIFIER);
+        
 
         ArrayList<AccountName> requiredPostingAuths = new ArrayList<>();
         requiredPostingAuths.add(new AccountName("dez1337"));

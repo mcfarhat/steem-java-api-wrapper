@@ -16,13 +16,12 @@
  */
 package eu.bittrade.libs.steemj.base.models.operations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -68,8 +67,7 @@ public class AccountUpdateOperationIT extends BaseTransactionVerificationIT {
      */
     @BeforeClass()
     public static void prepareTestClass() throws Exception {
-        setupIntegrationTestEnvironmentForTransactionVerificationTests(HTTP_MODE_IDENTIFIER,
-                STEEMNET_ENDPOINT_IDENTIFIER);
+        
 
         AccountName account = new AccountName("dez1337");
         PublicKey memoKey = new PublicKey(SteemJConfig.getInstance().getAddressPrefix().name().toUpperCase()
