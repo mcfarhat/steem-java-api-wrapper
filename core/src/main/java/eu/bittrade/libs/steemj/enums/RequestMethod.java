@@ -38,12 +38,6 @@ public enum RequestMethod {
     /** */
     GET_BLOCK_HEADER,
     // chain_api
-    /** */
-    PUSH_BLOCK,
-    /** */
-    PUSH_TRANSACTION,
-    // condenser_api
-    /** */
     GET_STATE,
     /** */
     GET_NEXT_SCHEDULED_HARDFORK,
@@ -60,7 +54,7 @@ public enum RequestMethod {
     /** */
     GET_CONTENT,
     /** */
-    GET_CONVERSION_REQUESTS,
+    GET_HBD_CONVERSION_REQUESTS,
     /** */
     GET_CURRENT_MEDIAN_HISTORY_PRICE,
     /** */
@@ -137,9 +131,9 @@ public enum RequestMethod {
     /** */
     FIND_VESTING_DELEGATION_EXPIRATIONS,
     /** */
-    LIST_SBD_CONVERSION_REQUESTS,
+    LIST_HBD_CONVERSION_REQUESTS,
     /** */
-    FIND_SBD_CONVERSION_REQUESTS,
+    FIND_HBD_CONVERSION_REQUESTS,
     /** */
     LIST_DECLINE_VOTING_RIGHTS_REQUESTS,
     /** */
@@ -170,22 +164,6 @@ public enum RequestMethod {
     VERIFY_ACCOUNT_AUTHORITY,
     /** */
     VERIFY_SIGNATURES,
-    /** */
-    GET_SMT_NEXT_IDENTIFIER,
-    // debug_node_api
-    /** */
-    DEBUG_POP_BLOCK,
-    /** */
-    DEBUG_GET_WITNESS_SCHEDULE,
-    /** */
-    DEBUG_GET_HARDFORK_PROPERTY_OBJECT,
-    /** */
-    DEBUG_SET_HARDFORK,
-    /** */
-    DEBUG_HAS_HARDFORK,
-    /** */
-    DEBUG_GET_JSON_SCHEMA,
-    // follow_api
     /** */
     GET_FOLLOWERS,
     /** */
@@ -269,10 +247,74 @@ public enum RequestMethod {
     /** */
     GET_ACTIVE_VOTES,
     // witness_api
-    /** */
-    GET_ACCOUNT_BANDWIDTH,
-    /** */
-    GET_REVERSE_RATIO,
-    
-    GET_LIQUIDITY_QUEUE
+
+
+        // # NEW METHODS TO ADD FOR HIVE COMPATIBILITY                           #
+    // #######################################################################
+
+    // ========== database_api additions ==========
+    /** Find proposals for the Hive Decentralized Fund (DHF). */
+    LIST_PROPOSALS,
+    /** Find a specific proposal by its ID. */
+    FIND_PROPOSALS,
+    /** List votes on a DHF proposal. */
+    LIST_PROPOSAL_VOTES,
+    /** Find recurrent transfers for an account. */
+    FIND_RECURRENT_TRANSFERS,
+    /** Find collateralized conversion requests (HBD to HIVE). */
+    FIND_COLLATERALIZED_CONVERSION_REQUESTS,
+
+    // ========== rc_api (This is a completely new API) ==========
+    /** Get the global parameters for the Resource Credits (RC) system. */
+    GET_RESOURCE_PARAMS,
+    /** Get the current status of the RC resource pool. */
+    GET_RESOURCE_POOL,
+    /** Find RC information for a list of accounts. */
+    FIND_RC_ACCOUNTS,
+    /** List RC accounts by name. */
+    LIST_RC_ACCOUNTS,
+    /** List RC delegations from one account to others. */
+    LIST_RC_DIRECT_DELEGATIONS,
+
+    // ========== transaction_status_api (This is a completely new API) ==========
+    /**
+     * Find a transaction and its status (in block, irreversible, etc.).
+     * This is the modern way to track a sent transaction.
+     */
+    FIND_TRANSACTION,
+
+    // ========== bridge_api (This is the modern API for social data) ==========
+    /** Get a ranked list of posts (e.g., for trending, hot, new). */
+    GET_RANKED_POSTS,
+    /** Get a single post with all its details. */
+    GET_POST,
+    /** Get a user's profile information. */
+    GET_PROFILE,
+    /** Get a list of posts from a specific account (blog). */
+    GET_ACCOUNT_POSTS,
+    /** Get a list of trending topics (tags). */
+    GET_TRENDING_TOPICS,
+    /** Get detailed information about a community. */
+    GET_COMMUNITY,
+    /** List all communities on the platform. */
+    LIST_COMMUNITIES,
+    /** List the subscribers of a community. */
+    LIST_SUBSCRIBERS,
+    /** Check if accounts are subscribed to a community. */
+    IS_SUBSCRIBED,
+    /** List account roles within a community. */
+    LIST_ROLES,
+    /** List notifications for an account. */
+    GET_NOTIFICATIONS,
+
+    // ========== rewards_api (This is a new API from HF25) ==========
+    /** Simulate the pending rewards an account can claim. */
+    SIMULATE_PENDING_REWARDS,
+
+    // ========== condenser_api additions ==========
+    /** Get a list of DHF proposals. */
+    GET_PROPOSALS,
+    /** Get a list of communities an account has subscribed to. */
+    GET_SUBSCRIBED_COMMUNITIES,
 }
+// done

@@ -27,9 +27,7 @@ public abstract class BaseTransactionVerificationIT extends BaseTransactionalIT 
     /**
      * Setup the test environment for transaction related tests.
      */
-    protected static void setupIntegrationTestEnvironmentForTransactionVerificationTests(String mode, String endpoint) {
-        setupIntegrationTestEnvironmentForTransactionalTests(mode, endpoint);
-    }
+  
 
     /**
      * Verify that a transaction is signed correctly by using the verify

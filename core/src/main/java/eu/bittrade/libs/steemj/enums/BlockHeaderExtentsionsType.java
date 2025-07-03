@@ -27,10 +27,21 @@ package eu.bittrade.libs.steemj.enums;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public enum BlockHeaderExtentsionsType {
-    /** NA */
+    /** ID: 0 | No extension */
     VOID_T,
-    /** Normal witness version reporting, for diagnostics and voting. */
+    /** ID: 1 | Reports witness software version */
     VERSION,
-    /** NA */
-    HARDFORK_VERSION_VOTE
+    /** ID: 2 | Allows witnesses to vote on hardfork activation */
+    HARDFORK_VERSION_VOTE,
+    /** ID: 3 | Reports missed producers (Added in Hive HF24) */
+    PRODUCER_MISSED,
+    /** ID: 4 | Provides a seed for witness shuffling (Added in Hive HF24) */
+    WITNESS_SHUFFLE_SEED,
+    /** ID: 5 | A list of actions that must be applied (Added in Hive HF25) */
+    REQUIRED_ACTIONS,
+    /** ID: 6 | A list of optional actions (Added in Hive HF25) */
+    OPTIONAL_ACTIONS
 }
+
+
+// DONE

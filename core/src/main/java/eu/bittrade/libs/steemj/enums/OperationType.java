@@ -111,7 +111,33 @@ public enum OperationType {
     /** The create_claimed_account_operation type */
     CREATE_CLAIMED_ACCOUNT_OPERATION(43),
     /** The witness_set_properties_operation type */
-    WITNESS_SET_PROPERTIES_OPERATION(44);
+    WITNESS_SET_PROPERTIES_OPERATION(44),
+    
+    RECURRENT_TRANSFER_OPERATION(45),
+    /**
+     * Creates a proposal to be voted on for funding from the DHF. (Added in HF24)
+     */
+    CREATE_PROPOSAL_OPERATION(46),
+    /**
+     * Vote for or against active proposals. (Added in HF24)
+     */
+    UPDATE_PROPOSAL_VOTES_OPERATION(47),
+    /**
+     * Remove a vote for a proposal. (Added in HF24)
+     */
+    REMOVE_PROPOSAL_OPERATION(48),
+    /**
+     * Allows the proposal creator to update the end date of a proposal. (Added in HF25)
+     */
+    UPDATE_PROPOSAL_OPERATION(49),
+    /**
+     * A request to convert HBD to HIVE based on collateral. (Added in HF25)
+     */
+    COLLATERALIZED_CONVERT_OPERATION(50);
+
+
+
+
 
     /**
      * The id of an operation. The id is used for the byte transformation and
@@ -138,3 +164,4 @@ public enum OperationType {
         return orderId;
     }
 }
+// DONE
