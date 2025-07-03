@@ -52,6 +52,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
  * can perform.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
+ * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote"),
@@ -97,7 +98,14 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = DelegateVestingSharesOperation.class, name = "delegate_vesting_shares"),
         @Type(value = AccountCreateWithDelegationOperation.class, name = "account_create_with_delegation"),
         @Type(value = ClaimAccountOperation.class, name = "claim_account"),
-        @Type(value = CreateClaimedAccountOperation.class, name = "create_claimed_account"),
+
+        // ### MODIFICATION FOR HIVE - START ###
+        // Changed "create_claimed_account" to the correct name "create_claimed_account_operation" to fix the typo.
+        @Type(value = CreateClaimedAccountOperation.class, name = "create_claimed_account_operation"),
+        // Added the new missing virtual operation "account_created_operation" from Hive.
+        @Type(value = AccountCreatedOperation.class, name = "account_created_operation"),
+        // ### MODIFICATION FOR HIVE - END ###
+        
         // Virtual Operations
         @Type(value = AuthorRewardOperation.class, name = "author_reward_operation"),
         @Type(value = CommentBenefactorRewardOperation.class, name = "comment_benefactor_reward_operation"),
