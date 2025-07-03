@@ -20,6 +20,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.joou.UInteger;
@@ -30,8 +31,8 @@ import com.google.common.collect.Lists;
 
 import eu.bittrade.crypto.core.ECKey;
 import eu.bittrade.crypto.core.Sha256Hash;
-import eu.bittrade.libs.steemj.base.models.Account; // Used in claimRewards, and now in calculateRemainingBandwidth
-import eu.bittrade.libs.steemj.base.models.ChainProperties;
+import eu.bittrade.libs.steemj.base.models.Account;
+import eu.bittrade.libs.steemj.base.models.ChainProperties; // Used in claimRewards, and now in calculateRemainingBandwidth
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
 import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.base.models.ScheduledHardfork;
@@ -53,6 +54,7 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHistoryArgs;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.plugins.apis.block.BlockApi;
 import eu.bittrade.libs.steemj.plugins.apis.block.models.ExtendedSignedBlock;
 import eu.bittrade.libs.steemj.plugins.apis.block.models.GetBlockArgs;
@@ -61,10 +63,10 @@ import eu.bittrade.libs.steemj.plugins.apis.condenser.CondenserApi;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder; // Make sure this is imported
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
-import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi; // Make sure this is imported
-import eu.bittrade.libs.steemj.plugins.apis.database.models.Config;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State; // Make sure this is imported
+import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
+import eu.bittrade.libs.steemj.plugins.apis.database.models.Config; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.RewardFund;
@@ -100,6 +102,7 @@ import eu.bittrade.libs.steemj.plugins.apis.tags.models.GetActiveVotesArgs;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.Tag;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.VoteState;
 import eu.bittrade.libs.steemj.protocol.AccountName;
+import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
 import eu.bittrade.libs.steemj.protocol.BlockHeader;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 import eu.bittrade.libs.steemj.protocol.Price;
@@ -166,23 +169,93 @@ public class SteemJ {
     // ## ACCOUNT HISTORY API ##################################################
     // #########################################################################
 
-    public List<AppliedOperation> getOpsInBlock(long blockNumber, boolean onlyVirtual)
+     public List<AppliedOperation> getOpsInBlock(long blockNumber, boolean onlyVirtual)
             throws SteemCommunicationException, SteemResponseException {
         return AccountHistoryApi
                 .getOpsInBlock(SteemJ.communicationHandler, new GetOpsInBlockArgs(UInteger.valueOf(blockNumber), onlyVirtual))
                 .getOperations();
     }
 
-    public void getTransaction() {
-        // This method was empty
+    /**
+     * Find a transaction by its transaction ID.
+     *
+     * @param transactionId The hexadecimal string representation of the transaction ID to search for.
+     * @return The annotated signed transaction if found.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException If the API returns an error (e.g., transaction not found).
+     */
+    public AnnotatedSignedTransaction getTransaction(String transactionId)
+            throws SteemCommunicationException, SteemResponseException {
+        return AccountHistoryApi.getTransaction(SteemJ.communicationHandler, transactionId);
     }
 
-    public Map<UInteger, AppliedOperation> getAccountHistory(AccountName accountName, ULong start, UInteger limit)
+    /**
+     * Returns a history of all operations for a given account using the updated Hive API model.
+     * This is the recommended method to use.
+     *
+     * @param accountName The name of the account to get the history for.
+     * @param start The sequence number to start from. For Hive, use -1 for oldest, or ULong.MAX_VALUE for newest.
+     * @param limit The maximum number of operations to return (1-1000).
+     * @return A List of {@link OperationHistoryEntry} objects, correctly representing the Hive API response.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException If the API returns an error.
+     */
+
+     public List<OperationHistoryEntry> getAccountHistory(AccountName accountName, ULong start, UInteger limit)
             throws SteemCommunicationException, SteemResponseException {
-        return AccountHistoryApi
-                .getAccountHistory(SteemJ.communicationHandler, new GetAccountHistoryArgs(accountName, start, limit))
+        return AccountHistoryApi.getAccountHistory(SteemJ.communicationHandler, accountName, start, limit)
                 .getHistory();
     }
+
+     /**
+     * Returns a history of all operations for a given account, with access to all optional Hive filters.
+     *
+     * @param accountName The name of the account.
+     * @param start The sequence number to start from.
+     * @param limit The maximum number of operations to return.
+     * @param includeReversible (Optional) If true, include operations from reversible blocks.
+     * @param operationFilterLow (Optional) Bitmask for filtering operations 0-63.
+     * @param operationFilterHigh (Optional) Bitmask for filtering operations 64-127.
+     * @return A List of {@link OperationHistoryEntry} objects.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException If the API returns an error.
+     */
+    public List<OperationHistoryEntry> getAccountHistory(AccountName accountName, ULong start, UInteger limit,
+            Boolean includeReversible, Long operationFilterLow, Long operationFilterHigh)
+            throws SteemCommunicationException, SteemResponseException {
+        return AccountHistoryApi.getAccountHistory(SteemJ.communicationHandler, accountName, start, limit,
+                includeReversible, operationFilterLow, operationFilterHigh).getHistory();
+    }
+     /**
+     * Get all operations performed by the specified account.
+     *
+     * @deprecated The Hive API returns a List, not a Map. This method is kept for backward compatibility but is
+     *             inefficient as it converts the result from a List to a Map. Please use the new
+     *             {@link #getAccountHistory(AccountName, ULong, UInteger)} which returns a {@code List<OperationHistoryEntry>}.
+     *
+     * @param accountName The user name of the account.
+     * @param start The starting point.
+     * @param limit The maximum number of entries.
+     * @return A map containing the activities. The key is the id of the activity.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException If the API returns an error.
+     */
+    @Deprecated
+    public Map<UInteger, AppliedOperation> getAccountHistoryAsMap(AccountName accountName, ULong start, UInteger limit)
+            throws SteemCommunicationException, SteemResponseException {
+        // Call the new API method to get the list-based response.
+        List<OperationHistoryEntry> historyList = AccountHistoryApi
+                .getAccountHistory(SteemJ.communicationHandler, new GetAccountHistoryArgs(accountName, start, limit))
+                .getHistory();
+        
+        // Convert the List<OperationHistoryEntry> into the old Map format for backward compatibility.
+        return historyList.stream().collect(Collectors.toMap(
+            entry -> UInteger.valueOf(entry.getHistoryIndex()), // Key: history index
+            OperationHistoryEntry::getOperation                 // Value: the AppliedOperation object
+        ));
+    }
+
+  
 
     // #########################################################################
     // ## BLOCK API ############################################################
@@ -707,4 +780,9 @@ public class SteemJ {
 		JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_HARDFORK_VERSION, parameters);
 		return SteemJ.communicationHandler.performRequest(requestObject, String.class).get(0);
 	}
+  
+
+
+
+  
 }

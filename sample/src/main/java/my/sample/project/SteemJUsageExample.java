@@ -1,13 +1,9 @@
 package my.sample.project;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.joou.UInteger;
-import org.joou.ULong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +12,10 @@ import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.configuration.SteemJConfig;
 import eu.bittrade.libs.steemj.enums.PrivateKeyType;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
-import eu.bittrade.libs.steemj.exceptions.SteemInvalidTransactionException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.VoteState;
 import eu.bittrade.libs.steemj.protocol.AccountName;
-import eu.bittrade.libs.steemj.protocol.LegacyAsset;
-import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
-import eu.bittrade.libs.steemj.protocol.operations.AccountCreateOperation;
-import eu.bittrade.libs.steemj.protocol.operations.CommentOperation;
 
 /**
  * This class provides shows some common SteemJ commands.
@@ -166,13 +156,7 @@ public class SteemJUsageExample {
 
 
             // Let's have a look at the account history of dez1337:
-            Map<UInteger, AppliedOperation> accountHistory = steemJ.getAccountHistory(new AccountName("dez1337"), ULong.valueOf(100),
-                    UInteger.valueOf(100));
-            if (accountHistory.get(0).getOp() instanceof AccountCreateOperation) {
-                AccountCreateOperation accountCreateOperation = (AccountCreateOperation) (accountHistory.get(0)
-                        .getOp());
-                LOGGER.info("The account {} has been created by {}.", "dez1337", accountCreateOperation.getCreator());
-            }
+           
             
             // Force an error response:
             steemJ.getAccountVotes(new AccountName("thisAcountDoesNotExistYet"));

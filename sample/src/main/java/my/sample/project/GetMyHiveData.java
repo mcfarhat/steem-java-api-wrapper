@@ -1,27 +1,24 @@
 package my.sample.project; // Or eu.bittrade.libs.steemj.sample if that's your package
 
-import eu.bittrade.libs.steemj.SteemJ;
-import eu.bittrade.libs.steemj.configuration.SteemJConfig;
-import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
-import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.protocol.AccountName;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
-import eu.bittrade.libs.steemj.protocol.PublicKey; // Needed for getKeyReferences test
-
-// Unused imports if only testing getAccounts and getKeyReferences
-// import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
-// import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
-// import org.joou.UInteger;
-// import org.joou.ULong;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-// import java.util.Map; // Not needed if other tests are commented out
+
+import org.joou.UInteger;
+import org.joou.ULong;
+import org.slf4j.Logger; // Needed for getKeyReferences test
+import org.slf4j.LoggerFactory;
+
+import eu.bittrade.libs.steemj.SteemJ;
+import eu.bittrade.libs.steemj.configuration.SteemJConfig;
+import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
+import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
+import eu.bittrade.libs.steemj.protocol.AccountName;
+import eu.bittrade.libs.steemj.protocol.PublicKey;
+
 
 public class GetMyHiveData {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMyHiveData.class);
@@ -123,6 +120,68 @@ public class GetMyHiveData {
             }
             LOGGER.info("--------------------------------------------------------------------");
             // <<< END OF NEW SECTION for getKeyReferences >>>
+
+
+                        // 3. <<< NEW SECTION FOR TESTING getAccountHistory >>>
+            LOGGER.info("--------------------------------------------------------------------");
+            LOGGER.info("Attempting to fetch account history...");
+
+            try {
+                // EXAMPLE 1: Get the 10 most recent operations for the account.
+                // ULong.valueOf(-1) is the standard way to request the most recent history.
+                ULong startFrom = ULong.valueOf(-1);
+                UInteger limit = UInteger.valueOf(10);
+                
+                LOGGER.info("Fetching the {} most recent history items for '{}'...", limit, myHiveAccountName.getName());
+
+                List<OperationHistoryEntry> recentHistory = steemJ.getAccountHistory(myHiveAccountName, startFrom, limit);
+
+                if (recentHistory != null && !recentHistory.isEmpty()) {
+                    LOGGER.info("Successfully fetched {} history items:", recentHistory.size());
+                    for (OperationHistoryEntry entry : recentHistory) {
+                        // Print some details for each operation found.
+                        LOGGER.info("  - Index: {}, Timestamp: {}, Operation Type: {}",
+                            entry.getHistoryIndex(),
+                            entry.getOperation().getTimestamp(),
+                            entry.getOperation().getOp().getClass().getSimpleName()
+                        );
+                    }
+                } else {
+                    LOGGER.warn("Could not retrieve recent account history for {}.", myHiveAccountName.getName());
+                }
+
+                LOGGER.info("---");
+
+                // EXAMPLE 2: Get up to 100 recent VOTE operations using the new filter feature.
+                // The bitmask for a vote_operation (ID 0) is 2^0 = 1.
+                Long voteFilter = 1L;
+                UInteger filterLimit = UInteger.valueOf(100);
+
+                LOGGER.info("Fetching up to {} recent VOTE operations for '{}' using a filter...", filterLimit, myHiveAccountName.getName());
+                
+                List<OperationHistoryEntry> filteredVoteHistory = steemJ.getAccountHistory(myHiveAccountName, 
+                        startFrom, filterLimit, true, voteFilter, 0L);
+                
+                if (filteredVoteHistory != null && !filteredVoteHistory.isEmpty()) {
+                    LOGGER.info("Successfully fetched {} VOTE operations:", filteredVoteHistory.size());
+                    // We can log the first few to confirm the filter worked.
+                    for (int i = 0; i < Math.min(5, filteredVoteHistory.size()); i++) {
+                        OperationHistoryEntry entry = filteredVoteHistory.get(i);
+                        LOGGER.info("  - Filtered Vote Op Index: {}, Type: {}",
+                            entry.getHistoryIndex(),
+                            entry.getOperation().getOp().getClass().getSimpleName());
+                    }
+                } else {
+                    LOGGER.warn("Could not find any recent vote operations for {}.", myHiveAccountName.getName());
+                }
+
+            } catch (SteemCommunicationException | SteemResponseException e) {
+                LOGGER.error("Error during getAccountHistory call: {}", e.getMessage(), e);
+            } catch (Exception e) {
+                LOGGER.error("An unexpected error occurred during the account history test: {}", e.getMessage(), e);
+            }
+            LOGGER.info("--------------------------------------------------------------------");
+            // <<< END OF NEW SECTION for getAccountHistory >>>
 
 
             // Other tests (account history, global properties) are still commented out
