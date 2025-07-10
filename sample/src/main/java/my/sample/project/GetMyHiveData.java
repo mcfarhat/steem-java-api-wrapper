@@ -45,7 +45,7 @@ public class GetMyHiveData {
         }
 
         // Your Hive account name - REPLACE THIS IF NEEDED
-        AccountName myHiveAccountName = new AccountName("milk21");
+        AccountName myHiveAccountName = new AccountName("omarghadban");
         myConfig.setDefaultAccount(myHiveAccountName);
         LOGGER.info("Default account set to: {}", myConfig.getDefaultAccount().getName());
 

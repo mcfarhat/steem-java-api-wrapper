@@ -36,6 +36,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentBenefactorRewa
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentPayoutUpdateOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentRewardOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CurationRewardOperation;
+import eu.bittrade.libs.steemj.protocol.operations.virtual.EffectiveCommentVoteOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillConvertRequestOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillOrderOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillTransferFromSavingsOperation;
@@ -55,7 +56,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
  * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote"),
+@JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote_operation"),
         @Type(value = CommentOperation.class, name = "comment"),
         @Type(value = TransferOperation.class, name = "transfer"),
         @Type(value = TransferToVestingOperation.class, name = "transfer_to_vesting"),
@@ -98,6 +99,11 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = DelegateVestingSharesOperation.class, name = "delegate_vesting_shares"),
         @Type(value = AccountCreateWithDelegationOperation.class, name = "account_create_with_delegation"),
         @Type(value = ClaimAccountOperation.class, name = "claim_account"),
+        // ... other virtual ops ...
+@Type(value = CurationRewardOperation.class, name = "curation_reward_operation"),
+@Type(value = EffectiveCommentVoteOperation.class, name = "effective_comment_vote_operation"),
+@Type(value = FillConvertRequestOperation.class, name = "fill_convert_request_operation"),
+// ... rest of the list ...
 
         // ### MODIFICATION FOR HIVE - START ###
         // Changed "create_claimed_account" to the correct name "create_claimed_account_operation" to fix the typo.
