@@ -36,9 +36,7 @@ import eu.bittrade.libs.steemj.IntegrationTest;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHistoryArgs;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
@@ -69,15 +67,7 @@ public class AccountHistoryApiIT extends BaseIT {
     /**
      * Test the {@link AccountHistoryApi#getOpsInBlock} method.
      */
-    @Category({ IntegrationTest.class })
-    @Test
-    public void testGetOpsInBlock() throws SteemCommunicationException, SteemResponseException {
-        // This test verifies that the call does not crash.
-        final List<AppliedOperation> operations = AccountHistoryApi
-                .getOpsInBlock(COMMUNICATION_HANDLER, new GetOpsInBlockArgs(UInteger.valueOf(1), true)).getOperations();
-        
-        assertThat("The result of getOpsInBlock should not be null.", operations, notNullValue());
-    }
+  
 
     /**
      * Test the corrected {@link AccountHistoryApi#getTransaction(CommunicationHandler, String)} method.

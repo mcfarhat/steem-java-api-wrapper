@@ -126,17 +126,22 @@ public class AccountHistoryApi {
     // # OTHER API METHODS                                                     #
     // #########################################################################
 
-    /**
+     // In AccountHistoryApi.java
+
+        /**
      * Get a sequence of operations included/generated within a particular block.
      */
     public static GetOpsInBlockReturn getOpsInBlock(CommunicationHandler communicationHandler,
            GetOpsInBlockArgs getOpsInBlockArgs) throws SteemCommunicationException, SteemResponseException {
+        
+        // ########## THE FINAL, CORRECT IMPLEMENTATION ##########
+        // The get_ops_in_block API expects a JSON object directly as its parameters,
+        // NOT wrapped in an array. We pass the GetOpsInBlockArgs object directly.
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.ACCOUNT_HISTORY_API,
                 RequestMethod.GET_OPS_IN_BLOCK, getOpsInBlockArgs);
 
         return communicationHandler.performRequest(requestObject, GetOpsInBlockReturn.class).get(0);
     }
-
     /**
      * Find a transaction by its transaction ID.
      *

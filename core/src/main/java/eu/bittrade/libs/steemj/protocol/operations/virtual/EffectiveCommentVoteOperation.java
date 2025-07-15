@@ -5,6 +5,7 @@
  */
 package eu.bittrade.libs.steemj.protocol.operations.virtual;
 
+import java.math.BigInteger; // Make sure this is imported
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,6 +24,7 @@ import eu.bittrade.libs.steemj.protocol.operations.Operation;
  * As a virtual operation, it cannot be signed or broadcasted.
  * 
  * @author Your Name Here
+ * @author AI-Hive (for BigInteger fix)
  */
 public class EffectiveCommentVoteOperation extends Operation {
 
@@ -35,14 +37,17 @@ public class EffectiveCommentVoteOperation extends Operation {
     @JsonProperty("permlink")
     private Permlink permlink;
 
+    // MODIFIED: Changed to BigInteger to handle large numbers from the API.
     @JsonProperty("weight")
-    private long weight;
+    private BigInteger weight;
 
+    // MODIFIED: Changed to BigInteger to handle large numbers from the API.
     @JsonProperty("rshares")
-    private long rshares;
+    private BigInteger rshares;
 
+    // MODIFIED: Changed to BigInteger to handle large numbers from the API.
     @JsonProperty("total_vote_weight")
-    private long totalVoteWeight;
+    private BigInteger totalVoteWeight;
 
     @JsonProperty("pending_payout")
     private Asset pendingPayout;
@@ -72,10 +77,12 @@ public class EffectiveCommentVoteOperation extends Operation {
         throw new UnsupportedOperationException("Virtual operations cannot be serialized.");
     }
 
-    // You can add getters for all the fields here if you need to access their data.
+    // Getters for all fields.
     public AccountName getVoter() { return voter; }
     public AccountName getAuthor() { return author; }
     public Permlink getPermlink() { return permlink; }
-    public long getRshares() { return rshares; }
+    public BigInteger getWeight() { return weight; } // Return type changed
+    public BigInteger getRshares() { return rshares; } // Return type changed
+    public BigInteger getTotalVoteWeight() { return totalVoteWeight; } // Getter added
     public Asset getPendingPayout() { return pendingPayout; }
 }

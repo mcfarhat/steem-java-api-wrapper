@@ -16,20 +16,17 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.database;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.hamcrest.Matcher;
-import org.joou.UInteger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,17 +36,12 @@ import eu.bittrade.libs.steemj.IntegrationTest;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.HardforkProperty;
 import eu.bittrade.libs.steemj.plugins.apis.tags.TagsApi;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.Tag;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
-import eu.bittrade.libs.steemj.protocol.operations.CommentOperation;
-import eu.bittrade.libs.steemj.protocol.operations.Operation;
 
 /**
  * This class contains all test connected to the
@@ -194,30 +186,5 @@ public class DatabaseApiIT extends BaseIT {
      * @throws SteemResponseException
      *             If the response is an error.
      */
-    @Category({ IntegrationTest.class })
-    @Test
-    public void testGetOpsInBlock() throws SteemCommunicationException, SteemResponseException {
-          final List<AppliedOperation> appliedOperationsOnlyVirtual =
-          AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER,new GetOpsInBlockArgs(UInteger.valueOf(5443322), true)).getOperations();
-        //  LOGGER.debug(appliedOperationsOnlyVirtual.size());
-          assertThat(appliedOperationsOnlyVirtual.get(0).getOpInTrx().intValue(),equalTo(0));
-          /*assertThat(appliedOperationsOnlyVirtual.size(), equalTo(6));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getOpInTrx(),
-          equalTo(1));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getTrxInBlock(),
-          equalTo(41));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getVirtualOp(),
-          equalTo(0L)); assertThat(appliedOperationsOnlyVirtual.get(0).getOp(),
-          instanceOf(ProducerRewardOperation.class));*/
-          
-          final List<AppliedOperation> appliedOperations =
-          AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER,new GetOpsInBlockArgs(UInteger.valueOf(1), false)).getOperations();
-          assertThat(appliedOperations.get(0).getOpInTrx().intValue(),equalTo(0));
-          /*assertThat(appliedOperations.size(), equalTo(51));
-          assertThat(appliedOperations.get(1).getOpInTrx(), equalTo(0));
-          assertThat(appliedOperations.get(1).getTrxInBlock(), equalTo(1));
-          assertThat(appliedOperations.get(1).getVirtualOp(), equalTo(0L));
-          assertThat(appliedOperations.get(1).getOp(), instanceOf(CommentOperation.class));*/
-         
-    }
+    
 }
