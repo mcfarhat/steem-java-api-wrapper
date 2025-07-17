@@ -19,8 +19,6 @@ package eu.bittrade.libs.steemj.plugins.apis.account.history.models;
 import java.util.List; // Changed from Map to List
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-// UInteger is no longer needed here
-// import org.joou.UInteger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 // The old deserializer is no longer needed. A new one will be attached to OperationHistoryEntry.
@@ -31,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * This class implements the Hive "get_account_history_return" object.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 public class GetAccountHistoryReturn {
     // MODIFIED: The 'history' field is now a List of a new type, OperationHistoryEntry,

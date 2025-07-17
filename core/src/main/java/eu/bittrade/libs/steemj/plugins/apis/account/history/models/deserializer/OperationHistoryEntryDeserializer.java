@@ -19,7 +19,6 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHist
  *
  * This class is the replacement for the old AppliedOperationHashMapDeserializer.
  *
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  * @author Your Name Here (for the modifications)
  */
 public class OperationHistoryEntryDeserializer extends JsonDeserializer<OperationHistoryEntry> {

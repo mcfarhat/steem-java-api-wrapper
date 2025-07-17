@@ -53,7 +53,6 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
  * can perform.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote_operation"),

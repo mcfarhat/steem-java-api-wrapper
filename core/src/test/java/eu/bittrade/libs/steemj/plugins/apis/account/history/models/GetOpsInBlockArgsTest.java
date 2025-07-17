@@ -18,11 +18,7 @@ package eu.bittrade.libs.steemj.plugins.apis.account.history.models;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-
-import java.security.InvalidParameterException;
-
-import org.joou.UInteger;
+import static org.hamcrest.Matchers.notNullValue;
 import org.junit.Test;
 
 /**
@@ -34,7 +30,41 @@ import org.junit.Test;
  */
 public class GetOpsInBlockArgsTest {
     /**
-     * Test if the {@link GetOpsInBlockArgs} fields are validated correctly.
+     * Test if a {@link GetOpsInBlockArgs} object can be created successfully with a
+     * valid, positive block number.
      */
-   
+    @Test
+    public void testConstructorWithPositiveBlockNumber() {
+        final long blockNum = 12345678L;
+        final boolean onlyVirtual = true;
+
+        GetOpsInBlockArgs getOpsInBlockArgs = new GetOpsInBlockArgs(blockNum, onlyVirtual);
+
+        assertThat("The object should be successfully created.", getOpsInBlockArgs, notNullValue());
+        assertThat("Expect that the block number has been set correctly.", getOpsInBlockArgs.getBlockNum(),
+                equalTo(blockNum));
+        assertThat("Expect that the onlyVirtual flag has been set correctly.", getOpsInBlockArgs.getOnlyVirtual(),
+                equalTo(onlyVirtual));
+    }
+
+    /**
+     * Test that the constructor, as implemented in the provided core file, accepts
+     * zero and negative block numbers without throwing an exception. This test
+     * verifies the actual behavior of the existing code.
+     */
+    @Test
+    public void testConstructorAcceptsTechnicallyInvalidBlockNumbers() {
+        // Test with block number 0
+        final long blockNumZero = 0L;
+        GetOpsInBlockArgs argsZero = new GetOpsInBlockArgs(blockNumZero, false);
+        assertThat("The object should be created successfully with block number 0.", argsZero, notNullValue());
+        assertThat("The block number should be set to 0.", argsZero.getBlockNum(), equalTo(blockNumZero));
+
+        // Test with a negative block number
+        final long blockNumNegative = -100L;
+        GetOpsInBlockArgs argsNegative = new GetOpsInBlockArgs(blockNumNegative, true);
+        assertThat("The object should be created successfully with a negative block number.", argsNegative,
+                notNullValue());
+        assertThat("The block number should be set to -100.", argsNegative.getBlockNum(), equalTo(blockNumNegative));
+    }
 }

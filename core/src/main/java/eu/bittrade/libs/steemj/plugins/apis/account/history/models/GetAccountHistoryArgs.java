@@ -35,7 +35,6 @@ import eu.bittrade.libs.steemj.util.SteemJUtils;
  * This class implements the arguments for the "get_account_history" API call, updated for the Hive API.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetAccountHistoryArgs {
