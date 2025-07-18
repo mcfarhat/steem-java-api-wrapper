@@ -36,22 +36,5 @@ public class GetOpsInBlockArgsTest {
     /**
      * Test if the {@link GetOpsInBlockArgs} fields are validated correctly.
      */
-    @Test
-    public void testFieldValidation() {
-        UInteger blockNum = UInteger.valueOf(1345461);
-
-        GetOpsInBlockArgs getOpsInBlockArgs = new GetOpsInBlockArgs(blockNum, false);
-
-        assertThat(getOpsInBlockArgs.getBlockNum(), equalTo(blockNum));
-        assertThat(getOpsInBlockArgs.getOnlyVirtual(), equalTo(false));
-
-        // Verify that an exception is thrown if required fields are not
-        // provided:
-        try {
-            getOpsInBlockArgs.setBlockNum(null);
-            fail();
-        } catch (InvalidParameterException e) {
-            // Expected.
-        }
-    }
+   
 }

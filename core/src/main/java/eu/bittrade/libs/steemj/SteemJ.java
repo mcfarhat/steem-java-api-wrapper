@@ -32,8 +32,8 @@ import com.google.common.collect.Lists;
 import eu.bittrade.crypto.core.ECKey;
 import eu.bittrade.crypto.core.Sha256Hash;
 import eu.bittrade.libs.steemj.base.models.Account;
-import eu.bittrade.libs.steemj.base.models.ChainProperties; // Used in claimRewards, and now in calculateRemainingBandwidth
-import eu.bittrade.libs.steemj.base.models.FeedHistory;
+import eu.bittrade.libs.steemj.base.models.ChainProperties;
+import eu.bittrade.libs.steemj.base.models.FeedHistory; // Used in claimRewards, and now in calculateRemainingBandwidth
 import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.base.models.ScheduledHardfork;
 import eu.bittrade.libs.steemj.chain.SignedTransaction;
@@ -64,11 +64,11 @@ import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State; // Make sure this is imported
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
 import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Config; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
-import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook;
+import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.database.models.RewardFund;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Witness;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.WitnessSchedule;
@@ -169,12 +169,32 @@ public class SteemJ {
     // ## ACCOUNT HISTORY API ##################################################
     // #########################################################################
 
-     public List<AppliedOperation> getOpsInBlock(long blockNumber, boolean onlyVirtual)
+     // #########################################################################
+    // # OTHER API METHODS                                                     #
+    // #########################################################################
+
+       /**
+     * Get a sequence of operations included/generated within a particular block.
+     *
+     * @param blockNum
+     *            The block number to retrieve operations from.
+     * @param onlyVirtual
+     *            Whether to only include virtual operations.
+     * @return A list of {@link AppliedOperation AppliedOperations} from the block.
+     * @throws SteemCommunicationException
+     *             If a communication error occurs.
+     * @throws SteemResponseException
+     *             If the API returns an error.
+     */
+    public List<AppliedOperation> getOpsInBlock(long blockNum, boolean onlyVirtual)
             throws SteemCommunicationException, SteemResponseException {
-        return AccountHistoryApi
-                .getOpsInBlock(SteemJ.communicationHandler, new GetOpsInBlockArgs(UInteger.valueOf(blockNumber), onlyVirtual))
-                .getOperations();
+        // 1. Create the new, correct arguments object using simple types (long, boolean).
+        GetOpsInBlockArgs params = new GetOpsInBlockArgs(blockNum, onlyVirtual);
+        
+        // 2. Call the static method in AccountHistoryApi.
+        return AccountHistoryApi.getOpsInBlock(SteemJ.communicationHandler, params).getOperations();
     }
+
 
     /**
      * Find a transaction by its transaction ID.
