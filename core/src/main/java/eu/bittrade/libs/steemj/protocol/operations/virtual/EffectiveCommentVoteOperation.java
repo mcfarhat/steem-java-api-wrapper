@@ -24,7 +24,6 @@ import eu.bittrade.libs.steemj.protocol.operations.Operation;
  * As a virtual operation, it cannot be signed or broadcasted.
  * 
  * @author Your Name Here
- * @author AI-Hive (for BigInteger fix)
  */
 public class EffectiveCommentVoteOperation extends Operation {
 

@@ -26,7 +26,6 @@ import eu.bittrade.libs.steemj.util.SteemJUtils;
  * of the base Operation class.
  *
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 public class CreateClaimedAccountOperation extends Operation {
 

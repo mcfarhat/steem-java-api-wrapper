@@ -14,7 +14,6 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.models.deserializer.
  *
  * This class replaces the old Map-based approach.
  *
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 @JsonDeserialize(using = OperationHistoryEntryDeserializer.class)
 public class OperationHistoryEntry {

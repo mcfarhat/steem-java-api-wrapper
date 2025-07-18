@@ -31,7 +31,6 @@ import eu.bittrade.libs.steemj.protocol.operations.Operation;
  * object, which is part of the get_account_history response.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 public class AppliedOperation {
     @JsonProperty("trx_id")

@@ -39,7 +39,6 @@ import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
  * This class implements the "account_history_api".
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 public class AccountHistoryApi {
     /** Add a private constructor to hide the implicit public one. */
