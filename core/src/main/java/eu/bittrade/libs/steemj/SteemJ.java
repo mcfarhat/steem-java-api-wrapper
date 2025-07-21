@@ -37,20 +37,16 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHis
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.plugins.apis.block.BlockApi;
-import eu.bittrade.libs.steemj.plugins.apis.block.models.ExtendedSignedBlock;
-import eu.bittrade.libs.steemj.plugins.apis.block.models.GetBlockArgs;
-import eu.bittrade.libs.steemj.plugins.apis.block.models.GetBlockHeaderArgs;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.CondenserApi;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
-import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
 import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Config;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
-import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook; // Make sure this is imported
+import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.RewardFund;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Witness;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.WitnessSchedule;
@@ -85,7 +81,6 @@ import eu.bittrade.libs.steemj.plugins.apis.tags.models.Tag;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.VoteState;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
-import eu.bittrade.libs.steemj.protocol.BlockHeader;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 import eu.bittrade.libs.steemj.protocol.Price;
 import eu.bittrade.libs.steemj.protocol.PublicKey;
@@ -97,32 +92,74 @@ import eu.bittrade.libs.steemj.util.SteemJUtils;
 
 public class SteemJ {
     private static CommunicationHandler communicationHandler;
+
     public SteemJ() throws SteemCommunicationException, SteemResponseException {
         SteemJ.communicationHandler = new CommunicationHandler();
     }
+
     public List<List<AccountName>> getKeyReferences(List<PublicKey> publicKeys) throws SteemCommunicationException, SteemResponseException {
         return AccountByKeyApi.getKeyReferences(SteemJ.communicationHandler, new GetKeyReferencesArgs(publicKeys)).getAccounts();
     }
-    public List<AppliedOperation> getOpsInBlock(long blockNumber, boolean onlyVirtual) throws SteemCommunicationException, SteemResponseException {
-        return AccountHistoryApi.getOpsInBlock(SteemJ.communicationHandler, new GetOpsInBlockArgs(UInteger.valueOf(blockNumber), onlyVirtual)).getOperations();
+
+    // #########################################################################
+    // ## ACCOUNT HISTORY API ##################################################
+    // #########################################################################
+
+    /**
+     * Get a sequence of operations included/generated within a particular block.
+     *
+     * @param blockNum      The block number to retrieve operations from.
+     * @param onlyVirtual   Whether to only include virtual operations.
+     * @return A list of {@link AppliedOperation AppliedOperations} from the block.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException      If the API returns an error.
+     */
+    public List<AppliedOperation> getOpsInBlock(long blockNum, boolean onlyVirtual)
+            throws SteemCommunicationException, SteemResponseException {
+        GetOpsInBlockArgs params = new GetOpsInBlockArgs(blockNum, onlyVirtual);
+        return AccountHistoryApi.getOpsInBlock(SteemJ.communicationHandler, params).getOperations();
     }
-    public AnnotatedSignedTransaction getTransaction(String transactionId) throws SteemCommunicationException, SteemResponseException {
+
+    /**
+     * Find a transaction by its transaction ID.
+     *
+     * @param transactionId The hexadecimal string representation of the transaction ID to search for.
+     * @return The annotated signed transaction if found.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException      If the API returns an error (e.g., transaction not found).
+     */
+    public AnnotatedSignedTransaction getTransaction(String transactionId)
+            throws SteemCommunicationException, SteemResponseException {
         return AccountHistoryApi.getTransaction(SteemJ.communicationHandler, transactionId);
     }
+    
+    /**
+     * Retrieve a block from the blockchain using the 'block_api'.
+     *
+     * @param blockNumber The number of the block to retrieve.
+     * @return The block.
+     * @throws SteemCommunicationException If a communication error occurs.
+     * @throws SteemResponseException      If the API returns an error.
+     */
     public SignedBlock getBlock(long blockNumber) throws SteemCommunicationException, SteemResponseException {
         return BlockApi.getBlock(SteemJ.communicationHandler, blockNumber).getBlock();
     }
+
     public List<OperationHistoryEntry> getAccountHistory(AccountName accountName, ULong start, UInteger limit) throws SteemCommunicationException, SteemResponseException {
         return AccountHistoryApi.getAccountHistory(SteemJ.communicationHandler, accountName, start, limit).getHistory();
     }
+
     public List<OperationHistoryEntry> getAccountHistory(AccountName accountName, ULong start, UInteger limit, Boolean includeReversible, Long operationFilterLow, Long operationFilterHigh) throws SteemCommunicationException, SteemResponseException {
         return AccountHistoryApi.getAccountHistory(SteemJ.communicationHandler, accountName, start, limit, includeReversible, operationFilterLow, operationFilterHigh).getHistory();
     }
+
     @Deprecated
     public Map<UInteger, AppliedOperation> getAccountHistoryAsMap(AccountName accountName, ULong start, UInteger limit) throws SteemCommunicationException, SteemResponseException {
         List<OperationHistoryEntry> historyList = AccountHistoryApi.getAccountHistory(SteemJ.communicationHandler, new GetAccountHistoryArgs(accountName, start, limit)).getHistory();
         return historyList.stream().collect(Collectors.toMap(entry -> UInteger.valueOf(entry.getHistoryIndex()), OperationHistoryEntry::getOperation));
     }
+
+    // ... (THE REST OF THE FILE IS UNCHANGED) ...
     public void broadcastTransaction(SignedTransaction transaction) throws SteemCommunicationException, SteemResponseException, SteemInvalidTransactionException {
         NetworkBroadcastApi.broadcastTransaction(SteemJ.communicationHandler, transaction);
     }
