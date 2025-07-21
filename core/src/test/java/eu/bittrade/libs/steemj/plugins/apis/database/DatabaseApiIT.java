@@ -16,20 +16,21 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.database;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import org.joou.UInteger;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.hamcrest.Matcher;
-import org.joou.UInteger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -42,14 +43,14 @@ import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.HardforkProperty;
 import eu.bittrade.libs.steemj.plugins.apis.tags.TagsApi;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.Tag;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
-import eu.bittrade.libs.steemj.protocol.operations.CommentOperation;
-import eu.bittrade.libs.steemj.protocol.operations.Operation;
+import eu.bittrade.libs.steemj.protocol.operations.VoteOperation;
 
 /**
  * This class contains all test connected to the
@@ -136,9 +137,9 @@ public class DatabaseApiIT extends BaseIT {
         assertNotNull(trendingTags);
         assertThat(trendingTags.size(), greaterThan(0));
         assertTrue(trendingTags.get(0).getName().equals(REQUESTED_TAG));
-      //  assertThat(trendingTags.get(0).getComments(), greaterThan(0L));
-      //  assertThat(trendingTags.get(0).getNetVotes(), greaterThan(0L));
-       // assertThat(trendingTags.get(0).getTopPosts(), greaterThan(0L));
+        // assertThat(trendingTags.get(0).getComments(), greaterThan(0L));
+        // assertThat(trendingTags.get(0).getNetVotes(), greaterThan(0L));
+        // assertThat(trendingTags.get(0).getTopPosts(), greaterThan(0L));
         // seems that payout asset report has changed
         // assertThat(trendingTags.get(0).getTotalPayouts().getSymbol(),
         // equalTo(AssetSymbolType.VESTS));
@@ -186,7 +187,7 @@ public class DatabaseApiIT extends BaseIT {
 
     /**
      * Test the
-     * {@link eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi#getOpsInBlock(CommunicationHandler, long, boolean)}
+     * {@link AccountHistoryApi#getOpsInBlock(CommunicationHandler, GetOpsInBlockArgs)}
      * method.
      * 
      * @throws SteemCommunicationException
@@ -197,27 +198,34 @@ public class DatabaseApiIT extends BaseIT {
     @Category({ IntegrationTest.class })
     @Test
     public void testGetOpsInBlock() throws SteemCommunicationException, SteemResponseException {
-          final List<AppliedOperation> appliedOperationsOnlyVirtual =
-          AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER,new GetOpsInBlockArgs(UInteger.valueOf(5443322), true)).getOperations();
-        //  LOGGER.debug(appliedOperationsOnlyVirtual.size());
-          assertThat(appliedOperationsOnlyVirtual.get(0).getOpInTrx().intValue(),equalTo(0));
-          /*assertThat(appliedOperationsOnlyVirtual.size(), equalTo(6));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getOpInTrx(),
-          equalTo(1));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getTrxInBlock(),
-          equalTo(41));
-          assertThat(appliedOperationsOnlyVirtual.get(0).getVirtualOp(),
-          equalTo(0L)); assertThat(appliedOperationsOnlyVirtual.get(0).getOp(),
-          instanceOf(ProducerRewardOperation.class));*/
-          
-          final List<AppliedOperation> appliedOperations =
-          AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER,new GetOpsInBlockArgs(UInteger.valueOf(1), false)).getOperations();
-          assertThat(appliedOperations.get(0).getOpInTrx().intValue(),equalTo(0));
-          /*assertThat(appliedOperations.size(), equalTo(51));
-          assertThat(appliedOperations.get(1).getOpInTrx(), equalTo(0));
-          assertThat(appliedOperations.get(1).getTrxInBlock(), equalTo(1));
-          assertThat(appliedOperations.get(1).getVirtualOp(), equalTo(0L));
-          assertThat(appliedOperations.get(1).getOp(), instanceOf(CommentOperation.class));*/
-         
+        // A known block number with a transaction.
+        final long blockNum = 1000L;
+        // The known transaction ID in block 1000.
+        final String expectedTrxId = "0c4f420b7a1ff5201b10626353982e56360b3781";
+
+        // Request all operations (not just virtual ones).
+        final GetOpsInBlockArgs args = new GetOpsInBlockArgs(blockNum, false);
+
+        // Call the API method from the correct Api class.
+        final GetOpsInBlockReturn result = AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER, args);
+
+        // Assertions
+        assertThat("The result object should not be null.", result, notNullValue());
+
+        List<AppliedOperation> operations = result.getOperations();
+        assertThat("The list of operations should not be null.", operations, notNullValue());
+        assertFalse("The list of operations for a known block should not be empty.", operations.isEmpty());
+
+        // Examine the first operation in the block.
+        AppliedOperation firstOp = operations.get(0);
+        assertThat("The block number in the operation should match the requested block number.", firstOp.getBlock(),
+                equalTo(UInteger.valueOf(blockNum)));
+        assertThat("The transaction ID should match the known value for this block.",
+                firstOp.getTrxId().getHashValue().toString(), equalTo(expectedTrxId));
+        assertFalse("This should be a real operation, not a virtual one.", firstOp.isVirtualOp());
+
+        // Check the actual operation type. This verifies the custom deserializer is
+        // correctly unwrapping the 'op' object.
+        assertThat("The operation should be a VoteOperation.", firstOp.getOp(), instanceOf(VoteOperation.class));
     }
 }

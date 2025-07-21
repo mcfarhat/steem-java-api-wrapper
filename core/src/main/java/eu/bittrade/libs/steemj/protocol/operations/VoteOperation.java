@@ -35,7 +35,6 @@ import eu.bittrade.libs.steemj.exceptions.SteemInvalidTransactionException;
 import eu.bittrade.libs.steemj.interfaces.SignatureObject;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.util.SteemJUtils;
-
 /**
  * This class represents the Steem "vote_operation" object.
  * 
@@ -75,6 +74,7 @@ public class VoteOperation extends Operation {
         this.setPermlink(permlink);
         this.setWeight(weight);
     }
+    
 
     /**
      * This new constructor is used exclusively by the JSON parser to handle the

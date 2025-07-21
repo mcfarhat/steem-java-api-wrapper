@@ -46,10 +46,11 @@ import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedDynamicGlobalProperties;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedLimitOrder;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
+import eu.bittrade.libs.steemj.plugins.apis.condenser.models.State;
 import eu.bittrade.libs.steemj.plugins.apis.database.DatabaseApi;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Config;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.DynamicGlobalProperty;
-import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook;
+import eu.bittrade.libs.steemj.plugins.apis.database.models.OrderBook; // Make sure this is imported
 import eu.bittrade.libs.steemj.plugins.apis.database.models.RewardFund;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.Witness;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.WitnessSchedule;

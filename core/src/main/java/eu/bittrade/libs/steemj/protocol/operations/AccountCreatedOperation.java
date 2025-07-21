@@ -17,7 +17,6 @@ import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 /**
  * A new virtual operation in Hive. It is generated after an account is successfully created.
  *
- * @author <a href="https://github.com/AI-Hive">AI-Hive</a>
  */
 public class AccountCreatedOperation extends Operation {
     @JsonProperty("creator")

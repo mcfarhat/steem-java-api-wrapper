@@ -14,6 +14,7 @@ import eu.bittrade.libs.steemj.SteemJ;
 import eu.bittrade.libs.steemj.configuration.SteemJConfig;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.ExtendedAccount;
 import eu.bittrade.libs.steemj.protocol.AccountName;
@@ -182,7 +183,39 @@ public class GetMyHiveData {
             }
             LOGGER.info("--------------------------------------------------------------------");
             // <<< END OF NEW SECTION for getAccountHistory >>>
+             // 4. <<< NEW SECTION FOR TESTING THE ORIGINAL getOpsInBlock >>>
+            LOGGER.info("--------------------------------------------------------------------");
+            LOGGER.info("Attempting to fetch operations in a block using the ORIGINAL code...");
 
+            try {
+                // A block number known to contain various operations.
+                long blockToTest = 5443322;
+                boolean onlyVirtualOps = false;
+
+                LOGGER.info("Fetching all operations for block #{}", blockToTest);
+                
+                // This call will use the original, unmodified getOpsInBlock method from your SteemJ.java file.
+                // We EXPECT this to fail.
+                List<AppliedOperation> opsInBlock = steemJ.getOpsInBlock(blockToTest, onlyVirtualOps);
+                
+                if (opsInBlock != null && !opsInBlock.isEmpty()) {
+                    LOGGER.info("SUCCESS (UNEXPECTED): Successfully fetched {} operations from block #{}:", opsInBlock.size(), blockToTest);
+                    for (AppliedOperation op : opsInBlock) {
+                        LOGGER.info("  - Op Type: {}", op.getOp().getClass().getSimpleName());
+                    }
+                } else {
+                    LOGGER.warn("Could not retrieve operations for block #{}, or the block was empty.", blockToTest);
+                }
+
+            } catch (Exception e) {
+                // We expect to land here. The original code is not compatible with Hive.
+                LOGGER.error("AN ERROR OCCURRED (THIS IS EXPECTED): The original getOpsInBlock failed. Error: {}", e.getMessage(), e);
+            }
+            LOGGER.info("--------------------------------------------------------------------");
+            // <<< END OF NEW SECTION for getOpsInBlock >>>
+
+
+            LOGGER.info("GetMyHiveData sample finished all processing.");
 
             // Other tests (account history, global properties) are still commented out
             /*
