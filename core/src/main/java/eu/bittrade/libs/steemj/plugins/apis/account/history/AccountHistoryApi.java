@@ -16,9 +16,6 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.account.history;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.joou.UInteger;
 import org.joou.ULong;
 
@@ -33,7 +30,6 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHis
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockReturn;
 import eu.bittrade.libs.steemj.protocol.AccountName;
-import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
 
 /**
  * This class implements the "account_history_api".
@@ -141,25 +137,7 @@ public class AccountHistoryApi {
 
         return communicationHandler.performRequest(requestObject, GetOpsInBlockReturn.class).get(0);
     }
-    /**
-     * Find a transaction by its transaction ID.
-     *
-     * @param communicationHandler A CommunicationHandler instance.
-     * @param transactionId The hexadecimal string representation of the transaction ID to search for.
-     * @return The annotated signed transaction if found.
-     * @throws SteemCommunicationException If a communication error occurs.
-     * @throws SteemResponseException If the API returns an error (e.g., transaction not found).
-     */
-    public static AnnotatedSignedTransaction getTransaction(CommunicationHandler communicationHandler,
-            String transactionId) throws SteemCommunicationException, SteemResponseException {
-        // The API expects a JSON object like {"id": "..."} as the parameter.
-        Map<String, String> params = Collections.singletonMap("id", transactionId);
-        
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.ACCOUNT_HISTORY_API,
-                RequestMethod.GET_TRANSACTION, params);
-
-        return communicationHandler.performRequest(requestObject, AnnotatedSignedTransaction.class).get(0);
-    }
+   
 }
 
 //done

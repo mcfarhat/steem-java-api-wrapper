@@ -18,6 +18,7 @@ package eu.bittrade.libs.steemj;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -108,6 +109,7 @@ import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 import eu.bittrade.libs.steemj.protocol.Price;
 import eu.bittrade.libs.steemj.protocol.PublicKey;
 import eu.bittrade.libs.steemj.protocol.SignedBlock;
+import eu.bittrade.libs.steemj.protocol.TransactionId;
 import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
 import eu.bittrade.libs.steemj.protocol.operations.Operation;
 import eu.bittrade.libs.steemj.protocol.operations.VoteOperation;
@@ -194,21 +196,61 @@ public class SteemJ {
         // 2. Call the static method in AccountHistoryApi.
         return AccountHistoryApi.getOpsInBlock(SteemJ.communicationHandler, params).getOperations();
     }
-
-
-    /**
-     * Find a transaction by its transaction ID.
-     *
-     * @param transactionId The hexadecimal string representation of the transaction ID to search for.
-     * @return The annotated signed transaction if found.
-     * @throws SteemCommunicationException If a communication error occurs.
-     * @throws SteemResponseException If the API returns an error (e.g., transaction not found).
-     */
-    public AnnotatedSignedTransaction getTransaction(String transactionId)
+        // IN SteemJ.java - ADD THIS TEMPORARY METHOD
+    public AnnotatedSignedTransaction getHistoryTransaction(TransactionId transactionId)
             throws SteemCommunicationException, SteemResponseException {
-        return AccountHistoryApi.getTransaction(SteemJ.communicationHandler, transactionId);
+        // The old code used a Map, but the API actually just wants the ID string.
+        // We will target the account_history_api explicitly.
+        
+        // This is based on your original AccountHistoryApi code that took a String
+        Map<String, String> params = Collections.singletonMap("id", transactionId.toString());
+
+        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.ACCOUNT_HISTORY_API,
+                RequestMethod.GET_TRANSACTION, params);
+
+        List<AnnotatedSignedTransaction> result = this.communicationHandler.performRequest(requestObject,
+                AnnotatedSignedTransaction.class);
+
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+
+        return result.get(0);
     }
 
+           /**
+     * Find a transaction by its transaction ID. This method calls the
+     * <code>condenser_api.get_transaction</code> method.
+     *
+     * @param transactionId
+     *            The {@link TransactionId} object representing the transaction to
+     *            search for.
+     * @return The {@link AnnotatedSignedTransaction} if found.
+     * @throws SteemCommunicationException
+     *             If a communication error occurs.
+     * @throws SteemResponseException
+     *             If the API returns an error (e.g., transaction not found).
+     */
+    public AnnotatedSignedTransaction getTransaction(TransactionId transactionId)
+            throws SteemCommunicationException, SteemResponseException {
+
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(transactionId.toString());
+
+        // THIS IS THE FINAL, CORRECTED LINE:
+        // Explicitly target the CONDENSER_API which contains the global get_transaction method.
+        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.CONDENSER_API, RequestMethod.GET_TRANSACTION,
+                parameters);
+
+        List<AnnotatedSignedTransaction> result = this.communicationHandler.performRequest(requestObject,
+                AnnotatedSignedTransaction.class);
+
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+
+        return result.get(0);
+    }
     /**
      * Returns a history of all operations for a given account using the updated Hive API model.
      * This is the recommended method to use.
