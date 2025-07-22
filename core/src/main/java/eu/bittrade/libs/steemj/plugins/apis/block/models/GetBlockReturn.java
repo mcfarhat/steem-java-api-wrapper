@@ -1,51 +1,32 @@
-/*
- *     This file is part of SteemJ (formerly known as 'Steem-Java-Api-Wrapper')
- * 
- *     SteemJ is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- * 
- *     SteemJ is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- * 
- *     You should have received a copy of the GNU General Public License
- *     along with SteemJ.  If not, see <http://www.gnu.org/licenses/>.
- */
 package eu.bittrade.libs.steemj.plugins.apis.block.models;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Optional;
+import eu.bittrade.libs.steemj.protocol.SignedBlock; // <-- CORRECTED IMPORT
 
 /**
- * This class is the java implementation of the Steem "get_block_return" object.
- * 
- * @author <a href="http://steemit.com/@dez1337">dez1337</a>
+ * A wrapper class to handle the nested response from the block_api.get_block call.
+ * The Hive API returns a JSON object like {"block": { ... }}, and this class
+ * maps that structure.
  */
 public class GetBlockReturn {
+    private SignedBlock block;
+
+    /**
+     * A public default constructor is required for the Jackson JSON parser to
+     * instantiate the object.
+     */
+    public GetBlockReturn() { }
+
+    public GetBlockReturn(SignedBlock block) {
+        this.block = block;
+    }
+
     @JsonProperty("block")
-    private ExtendedSignedBlock block;
-
-    /**
-     * This object is only used to wrap the JSON response in a POJO, so
-     * therefore this class should not be instantiated.
-     */
-    private GetBlockReturn() {
+    public SignedBlock getBlock() {
+        return block;
     }
 
-    /**
-     * @return the header
-     */
-    public Optional<ExtendedSignedBlock> getBlock() {
-        return Optional.fromNullable(block);
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public void setBlock(SignedBlock block) {
+        this.block = block;
     }
 }

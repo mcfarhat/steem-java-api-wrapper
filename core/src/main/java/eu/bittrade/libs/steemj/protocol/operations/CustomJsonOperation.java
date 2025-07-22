@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -42,44 +41,20 @@ import eu.bittrade.libs.steemj.util.SteemJUtils;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public class CustomJsonOperation extends Operation {
-    @JsonProperty("required_auths")
+    // The @JsonProperty annotations have been removed from these fields to resolve
+    // a conflict with the @JsonCreator constructor.
     private List<AccountName> requiredAuths;
-    @JsonProperty("required_posting_auths")
     private List<AccountName> requiredPostingAuths;
-    @JsonProperty("id")
     private String id;
-    @JsonProperty("json")
     private String json;
 
     /**
-     * Create a new custom json operation. This operation serves the same
-     * purpose as
-     * {@link eu.bittrade.libs.steemj.protocol.operations.CustomOperation
-     * CustomOperation} but also supports required posting authorities. Unlike
-     * {@link eu.bittrade.libs.steemj.protocol.operations.CustomOperation
-     * CustomOperation}, this operation is designed to be human
-     * readable/developer friendly.
-     * 
-     * @param requiredAuths
-     *            A list of account names whose private active key is required
-     *            to sign the transaction (see {@link #setRequiredAuths(List)}).
-     * @param requiredPostingAuths
-     *            A list of account names whose private posting key is required
-     *            to sign the transaction (see
-     *            {@link #setRequiredPostingAuths(List)}).
-     * @param id
-     *            The plugin id (e.g. <code>follow</code>) (see
-     *            {@link #setId(String)}).
-     * @param json
-     *            The payload provided as a valid JSON string (see
-     *            {@link #setJson(String)}).
-     * @throws InvalidParameterException
-     *             If a parameter does not fulfill the requirements.
+     * This constructor is for creating new operations within the code.
+     * The @JsonCreator annotation has been REMOVED from this constructor.
      */
-    @JsonCreator
-    public CustomJsonOperation(@JsonProperty("required_auths") List<AccountName> requiredAuths,
-            @JsonProperty("required_posting_auths") List<AccountName> requiredPostingAuths,
-            @JsonProperty("id") String id, @JsonProperty("json") String json) {
+    public CustomJsonOperation(List<AccountName> requiredAuths,
+            List<AccountName> requiredPostingAuths,
+            String id, String json) {
         super(false);
 
         this.setRequiredAuths(requiredAuths);
@@ -89,25 +64,40 @@ public class CustomJsonOperation extends Operation {
     }
 
     /**
-     * Get the list of account names whose private active keys were required to
-     * sign this transaction.
-     * 
-     * @return The list of account names whose private active keys were required
+     * This new constructor is used exclusively by the JSON parser to handle the
+     * nested "value" object sent by the Hive API.
+     *
+     * @param value A map containing the actual operation data from the JSON response.
      */
+    @JsonCreator
+    @SuppressWarnings("unchecked")
+    public CustomJsonOperation(@JsonProperty("value") Map<String, Object> value) {
+        super(false);
+
+        List<AccountName> requiredAuthsList = new ArrayList<>();
+        if (value.containsKey("required_auths")) {
+            for (String auth : (List<String>) value.get("required_auths")) {
+                requiredAuthsList.add(new AccountName(auth));
+            }
+        }
+        this.setRequiredAuths(requiredAuthsList);
+
+        List<AccountName> requiredPostingAuthsList = new ArrayList<>();
+        if (value.containsKey("required_posting_auths")) {
+            for (String auth : (List<String>) value.get("required_posting_auths")) {
+                requiredPostingAuthsList.add(new AccountName(auth));
+            }
+        }
+        this.setRequiredPostingAuths(requiredPostingAuthsList);
+
+        this.setId((String) value.get("id"));
+        this.setJson((String) value.get("json"));
+    }
+
     public List<AccountName> getRequiredAuths() {
         return requiredAuths;
     }
 
-    /**
-     * Set the list of account names whose private active keys are required to
-     * sign this transaction.
-     * 
-     * @param requiredAuths
-     *            The account names whose private active keys are required.
-     * @throws InvalidParameterException
-     *             If the provided <code>requiredAuths</code> is empty and in
-     *             addition no {@link #getRequiredPostingAuths()} are provided.
-     */
     public void setRequiredAuths(List<AccountName> requiredAuths) {
         if (requiredAuths == null) {
             this.requiredAuths = new ArrayList<>();
@@ -116,27 +106,10 @@ public class CustomJsonOperation extends Operation {
         }
     }
 
-    /**
-     * Get the list of account names whose private posting keys were required to
-     * sign this transaction.
-     * 
-     * @return The list of account names whose private posting keys were
-     *         required.
-     */
     public List<AccountName> getRequiredPostingAuths() {
         return requiredPostingAuths;
     }
 
-    /**
-     * Set the list of account names whose private posting keys are required to
-     * sign this transaction.
-     * 
-     * @param requiredPostingAuths
-     *            The account names whose private posting keys are required.
-     * @throws InvalidParameterException
-     *             If the provided <code>requiredPostingAuths</code> is empty
-     *             and in addition no {@link #getRequiredAuths()} are provided.
-     */
     public void setRequiredPostingAuths(List<AccountName> requiredPostingAuths) {
         if (requiredPostingAuths == null) {
             this.requiredPostingAuths = new ArrayList<>();
@@ -145,41 +118,18 @@ public class CustomJsonOperation extends Operation {
         }
     }
 
-    /**
-     * @return The plugin id (e.g. <code>follow</code>").
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Set the plugin id for this operation.
-     * 
-     * @param id
-     *            The plugin id of this Operation (e.g. <code>follow</code>").
-     * @throws InvalidParameterException
-     *             If the id has more than 31 characters or has not been
-     *             provided.
-     */
     public void setId(String id) {
         this.id = SteemJUtils.setIfNotNull(id, "An ID is required.");
     }
 
-    /**
-     * @return The JSON covered by this Operation in its String representation.
-     */
     public String getJson() {
         return json;
     }
 
-    /**
-     * Set the JSON String that should be send with this Operation.
-     * 
-     * @param json
-     *            The JSON to send.
-     * @throws InvalidParameterException
-     *             If the given <code>json</code> is not valid.
-     */
     public void setJson(String json) {
         this.json = json;
     }

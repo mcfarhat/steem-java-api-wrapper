@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper; // <-- IMPORTANT IMPORT
 
-import eu.bittrade.libs.steemj.configuration.SteemJConfig;
 import eu.bittrade.libs.steemj.enums.OperationType;
 import eu.bittrade.libs.steemj.enums.PrivateKeyType;
 import eu.bittrade.libs.steemj.enums.ValidationType;
@@ -37,177 +36,82 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.LegacyAsset;
 import eu.bittrade.libs.steemj.util.SteemJUtils;
 
-/**
- * This class represents the Steem "claim_reward_balance_operation" object.
- * 
- * @author <a href="http://steemit.com/@dez1337">dez1337</a>
- */
 public class ClaimRewardBalanceOperation extends Operation {
-    @JsonProperty("account")
+    // The @JsonProperty annotations have been REMOVED from these fields.
     private AccountName account;
-    @JsonProperty("reward_steem")
-    private LegacyAsset rewardSteem;
-    @JsonProperty("reward_sbd")
-    private LegacyAsset rewardSbd;
-    @JsonProperty("reward_vests")
+    private LegacyAsset rewardHive;
+    private LegacyAsset rewardHbd;
     private LegacyAsset rewardVests;
 
     /**
-     * Create a new and empty claim reward balance operation.
-     * 
-     * @param account
-     *            The account to claim the rewards for (see
-     *            {@link #setAccount(AccountName)}).
-     * @param rewardSteem
-     *            The amount of Steem to claim (see
-     *            {@link #setRewardSteem(LegacyAsset)}).
-     * @param rewardSbd
-     *            The amount of SBD to claim (see
-     *            {@link #setRewardSbd(LegacyAsset)}).
-     * @param rewardVests
-     *            The amount of VESTS to claim (see
-     *            {@link #setRewardVests(LegacyAsset)}).
-     * @throws InvalidParameterException
-     *             If one of the parameters does not fulfill the requirements.
+     * This is the original constructor. The @JsonCreator and @JsonProperty annotations
+     * have been REMOVED. The parameter names have been changed to match Hive (rewardHive, rewardHbd).
      */
-    @JsonCreator
-    public ClaimRewardBalanceOperation(@JsonProperty("account") AccountName account,
-            @JsonProperty("reward_steem") LegacyAsset rewardSteem, @JsonProperty("reward_sbd") LegacyAsset rewardSbd,
-            @JsonProperty("reward_vests") LegacyAsset rewardVests) {
+    public ClaimRewardBalanceOperation(AccountName account, LegacyAsset rewardHive,
+            LegacyAsset rewardHbd, LegacyAsset rewardVests) {
         super(false);
-
         this.setAccount(account);
-        this.setRewardSbd(rewardSbd);
-        this.setRewardSteem(rewardSteem);
+        this.setRewardHive(rewardHive);
+        this.setRewardHbd(rewardHbd);
         this.setRewardVests(rewardVests);
     }
-
+    
     /**
-     * Get the account the reward should be collected for.
-     * 
-     * @return The account name.
+     * This new constructor is used exclusively by the JSON parser to handle the
+     * nested "value" object sent by the Hive API.
      */
+    @JsonCreator
+    public ClaimRewardBalanceOperation(@JsonProperty("value") Map<String, Object> value) {
+        super(false);
+        ObjectMapper mapper = new ObjectMapper();
+        this.setAccount(new AccountName((String) value.get("account")));
+        this.setRewardHive(mapper.convertValue(value.get("reward_hive"), LegacyAsset.class));
+        this.setRewardHbd(mapper.convertValue(value.get("reward_hbd"), LegacyAsset.class));
+        this.setRewardVests(mapper.convertValue(value.get("reward_vests"), LegacyAsset.class));
+    }
+
     public AccountName getAccount() {
         return account;
     }
 
-    /**
-     * Set the account the reward should be collected for. <b>Notice:</b> The
-     * private posting key of this account needs to be stored in the key
-     * storage.
-     * 
-     * @param account
-     *            The account name.
-     * @throws InvalidParameterException
-     *             If the <code>account</code> is null.
-     */
     public void setAccount(AccountName account) {
         this.account = SteemJUtils.setIfNotNull(account, "The account can't be null.");
     }
 
-    /**
-     * Get the amount of Steem that should be collected.
-     * 
-     * @return The amount of Steem.
-     */
-    public LegacyAsset getRewardSteem() {
-        return rewardSteem;
+    public LegacyAsset getRewardHive() {
+        return rewardHive;
     }
 
-    /**
-     * Set the amount of Steem that should be collected. Please note that it is
-     * not possible to collect more than that what is available. You can check
-     * the available amount by requesting the Account information using
-     * {@link eu.bittrade.libs.steemj.SteemJ#getAccounts(List)
-     * getAccounts(List)} method.
-     * 
-     * @param rewardSteem
-     *            The amount of Steem to collect.
-     * @throws InvalidParameterException
-     *             If the provided <code>rewardSteem</code> is null, does not
-     *             have the symbol type STEEM or the amount to claim is
-     *             negative.
-     */
-    public void setRewardSteem(LegacyAsset rewardSteem) {
-        if (rewardSteem == null) {
-            throw new InvalidParameterException("The STEEM reward can't be null.");
-        }
-
-        this.rewardSteem = rewardSteem;
+    public void setRewardHive(LegacyAsset rewardHive) {
+        this.rewardHive = SteemJUtils.setIfNotNull(rewardHive, "Reward Hive can't be null.");
     }
 
-    /**
-     * Get the amount of Steem Doller that should be collected.
-     * 
-     * @return The amount of Steem Doller.
-     */
-    public LegacyAsset getRewardSbd() {
-        return rewardSbd;
+    public LegacyAsset getRewardHbd() {
+        return rewardHbd;
     }
 
-    /**
-     * Set the amount of Steem Dollers that should be collected. Please note
-     * that it is not possible to collect more than that what is available. You
-     * can check the available amount by requesting the Account information
-     * using {@link eu.bittrade.libs.steemj.SteemJ#getAccounts(List)
-     * getAccounts(List)} method.
-     * 
-     * @param rewardSbd
-     *            The amount of Steem Dollers to collect.
-     * @throws InvalidParameterException
-     *             If the provided <code>rewardSbd</code> is null, does not have
-     *             the symbol type SBD or the amount to claim is negative.
-     */
-    public void setRewardSbd(LegacyAsset rewardSbd) {
-        if (rewardSbd == null) {
-            throw new InvalidParameterException("The SBD reward can't be null.");
-        }
-
-        this.rewardSbd = rewardSbd;
+    public void setRewardHbd(LegacyAsset rewardHbd) {
+        this.rewardHbd = SteemJUtils.setIfNotNull(rewardHbd, "Reward HBD can't be null.");
     }
 
-    /**
-     * Get the amount of Vests that should be collected.
-     * 
-     * @return The amount of Vests.
-     */
     public LegacyAsset getRewardVests() {
         return rewardVests;
     }
 
-    /**
-     * Set the amount of Vests that should be collected. Please note that it is
-     * not possible to collect more than that what is available. You can check
-     * the available amount by requesting the Account information using
-     * {@link eu.bittrade.libs.steemj.SteemJ#getAccounts(List)
-     * getAccounts(List)} method.
-     * 
-     * @param rewardVests
-     *            The amount of Vests to collect.
-     * @throws InvalidParameterException
-     *             If the provided <code>rewardVests</code> is null, does not
-     *             have the symbol type VESTS or the amount to claim is
-     *             negative.
-     */
     public void setRewardVests(LegacyAsset rewardVests) {
-        if (rewardVests == null) {
-            throw new InvalidParameterException("The VESTS reward can't be null.");
-        }
-
-        this.rewardVests = rewardVests;
+        this.rewardVests = SteemJUtils.setIfNotNull(rewardVests, "Reward Vests can't be null.");
     }
 
     @Override
     public byte[] toByteArray() throws SteemInvalidTransactionException {
-        try (ByteArrayOutputStream serializedClaimRewardOperation = new ByteArrayOutputStream()) {
-            serializedClaimRewardOperation.write(SteemJUtils
+        try (ByteArrayOutputStream serializedClaimRewardBalanceOperation = new ByteArrayOutputStream()) {
+            serializedClaimRewardBalanceOperation.write(SteemJUtils
                     .transformIntToVarIntByteArray(OperationType.CLAIM_REWARD_BALANCE_OPERATION.getOrderId()));
-            serializedClaimRewardOperation.write(this.getAccount().toByteArray());
-            serializedClaimRewardOperation.write(this.getRewardSteem().toByteArray());
-            serializedClaimRewardOperation.write(this.getRewardSbd().toByteArray());
-            serializedClaimRewardOperation.write(this.getRewardVests().toByteArray());
-
-            return serializedClaimRewardOperation.toByteArray();
+            serializedClaimRewardBalanceOperation.write(this.getAccount().toByteArray());
+            serializedClaimRewardBalanceOperation.write(this.getRewardHive().toByteArray());
+            serializedClaimRewardBalanceOperation.write(this.getRewardHbd().toByteArray());
+            serializedClaimRewardBalanceOperation.write(this.getRewardVests().toByteArray());
+            return serializedClaimRewardBalanceOperation.toByteArray();
         } catch (IOException e) {
             throw new SteemInvalidTransactionException(
                     "A problem occured while transforming the operation into a byte array.", e);
@@ -227,26 +131,9 @@ public class ClaimRewardBalanceOperation extends Operation {
 
     @Override
     public void validate(List<ValidationType> validationsToSkip) {
-        if (!validationsToSkip.contains(ValidationType.SKIP_VALIDATION)) {
-            if ((rewardSbd.getAmount() + rewardSteem.getAmount() + rewardVests.getAmount()) <= 0) {
-                throw new InvalidParameterException("Must claim something.");
-            }
-
-            if (!validationsToSkip.contains(ValidationType.SKIP_ASSET_VALIDATION)) {
-                if (!rewardSbd.getSymbol().equals(SteemJConfig.getInstance().getDollarSymbol())) {
-                    throw new InvalidParameterException("The SBD reward must be of symbol type SBD.");
-                } else if (rewardSbd.getAmount() < 0) {
-                    throw new InvalidParameterException("Cannot claim a negative SBD amount");
-                } else if (!rewardVests.getSymbol().equals(SteemJConfig.getInstance().getVestsSymbol())) {
-                    throw new InvalidParameterException("The VESTS reward must be of symbol type VESTS.");
-                } else if (rewardVests.getAmount() < 0) {
-                    throw new InvalidParameterException("Cannot claim a negative VESTS amount");
-                } else if (!rewardSteem.getSymbol().equals(SteemJConfig.getInstance().getTokenSymbol())) {
-                    throw new InvalidParameterException("The STEEM reward must be of symbol type STEEM.");
-                } else if (rewardSteem.getAmount() < 0) {
-                    throw new InvalidParameterException("Cannot claim a negative STEEM amount");
-                }
-            }
+        if (!validationsToSkip.contains(ValidationType.SKIP_VALIDATION)
+                && (rewardHive.getAmount() < 0 || rewardHbd.getAmount() < 0 || rewardVests.getAmount() < 0)) {
+            throw new InvalidParameterException("All reward amounts must be non-negative.");
         }
     }
 }
