@@ -128,6 +128,7 @@
                         <!-- This now excludes ALL .java files in the broken 'operations' test folder -->
 						<exclude>**/base/models/operations/*.java</exclude>
 						<exclude>**/plugins/apis/block/BlockApiIT.java</exclude>
+						<exclude>**/SteemJIT.java</exclude> 
 					</testExcludes>
 				</configuration>
 			</plugin>

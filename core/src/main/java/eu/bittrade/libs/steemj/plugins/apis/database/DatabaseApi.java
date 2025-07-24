@@ -17,6 +17,7 @@
 package eu.bittrade.libs.steemj.plugins.apis.database;
 
 import java.util.List;
+import java.util.Map;
 
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
@@ -137,11 +138,12 @@ public class DatabaseApi {
      *             <li>If the Server returned an error object.</li>
      *             </ul>
      */
-    public static Config getConfig(CommunicationHandler communicationHandler)
+    public static Map<String, Object> getConfig(CommunicationHandler communicationHandler)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_CONFIG, null);
 
-        return communicationHandler.performRequest(requestObject, Config.class).get(0);
+        // We now tell the parser to expect a simple Map, not the broken Config class.
+        return communicationHandler.performRequest(requestObject, Map.class).get(0);
     }
 
     /**

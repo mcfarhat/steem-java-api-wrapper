@@ -375,10 +375,9 @@ public class SteemJ {
         signedTransaction.sign();
         this.broadcastTransaction(signedTransaction);
     }
-    public static Config getConfig() throws SteemCommunicationException, SteemResponseException {
-        String[] parameters = {};
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_CONFIG, parameters);
-        return SteemJ.communicationHandler.performRequest(requestObject, Config.class).get(0);
+    public static Map<String, Object> getConfig() throws SteemCommunicationException, SteemResponseException {
+        // This method now calls our fixed worker method in DatabaseApi.
+        return DatabaseApi.getConfig(SteemJ.communicationHandler);
     }
     public String getHardforkVersion() throws SteemCommunicationException, SteemResponseException {
         String[] parameters = {};
