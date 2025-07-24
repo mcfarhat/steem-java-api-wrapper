@@ -59,12 +59,63 @@ SteemJ binaries are pushed into the maven central repository and can be integrat
 
 Please have a look at the [Wiki](https://github.com/marvin-we/steem-java-api-wrapper/wiki/How-to-add-SteemJ-to-your-project) to find examples for Maven, Ivy, Gradle and others.
 
-# How to build the project
-The project requires Maven and Java to be installed on your machine. It can be build with the default maven command:
+# Development Setup
 
->mvn clean package
+Follow these instructions to set up a local development environment for contributing to the project.
 
-The resulting JAR can be found in the target directory as usual. Please notice that some integration tests require different private keys. Please provide them as -D parameter or use the properties file ( *src/test/resources/accountDetailsUsedDuringTests.properties* ) to define them. If you do not want to execute tests at all add *"-Dmaven.test.skip"* to the mvn call which skips the test execution during the build.
+### 1. Prerequisites
+
+Before you begin, ensure you have the following software installed on your system:
+-   **Git:** For version control.
+-   **Java Development Kit (JDK) 8:** The project is built on Java 8. Newer versions may cause compilation issues.
+-   **Apache Maven:** For dependency management and building the project.
+
+### 2. Fork and Clone the Repository
+
+1.  **Fork the Repository:** First, create a fork of the main repository (`mcfarhat/steem-java-api-wrapper`) to your own GitHub account.
+
+2.  **Clone Your Fork:** Clone your personal fork to your local machine. Replace `your-username` with your actual GitHub username.
+    ```bash
+    git clone https://github.com/your-username/steem-java-api-wrapper.git
+    cd steem-java-api-wrapper
+    ```
+
+3.  **Configure Remotes:** Set up a remote reference to the original repository (`upstream`). This is crucial for keeping your fork synchronized with the main project.
+    ```bash
+    git remote add upstream https://github.com/mcfarhat/steem-java-api-wrapper.git
+    ```
+    Verify the remotes are configured correctly by running `git remote -v`. The output should show your fork as `origin` and the main repository as `upstream`.
+
+### 3. Building the Project
+
+The project uses Maven to manage the build process.
+
+**Important:** The full test suite contains legacy integration tests that are currently broken. To successfully build the project, you **must skip the tests** during the initial build.
+
+-   Run the build command from the root directory:
+    ```bash
+    mvn clean install -DskipTests
+    ```
+    This command will download all required dependencies and compile the entire project.
+
+### 4. Running a Single Test
+
+When working on a new feature, you must prove your changes work by creating and running a dedicated test. Since the full test suite cannot be run, use the following command to run *only* your specific test file.
+
+-   Replace `TestYourClassName` with the name of your test file:
+    ```bash
+    mvn test -Dtest=TestYourClassName
+    ```
+    For example, to run the test for the `block_api.get_block` endpoint, you would use:
+    ```bash
+    mvn test -Dtest=TestGetBlock
+    ```
+A successful run of your new test is required for your Pull Request to be approved.
+
+### 5. IDE Setup (VSCode Example)
+
+-   Open the project's root folder in Visual Studio Code.
+-   Ensure you have the **"Extension Pack for Java"** from Microsoft installed. It will automatically detect the Maven `pom.xml` files and configure the project correctly.
 
 # Bugs and Feedback
 For bugs or feature requests please create a [GitHub Issue](https://github.com/marvin-we/steem-java-api-wrapper/issues). 
