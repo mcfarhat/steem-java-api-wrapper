@@ -1,13 +1,9 @@
 package my.sample.project;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.joou.UInteger;
-import org.joou.ULong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +12,10 @@ import eu.bittrade.libs.steemj.base.models.Permlink;
 import eu.bittrade.libs.steemj.configuration.SteemJConfig;
 import eu.bittrade.libs.steemj.enums.PrivateKeyType;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
-import eu.bittrade.libs.steemj.exceptions.SteemInvalidTransactionException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.condenser.models.AccountVote;
 import eu.bittrade.libs.steemj.plugins.apis.tags.models.VoteState;
 import eu.bittrade.libs.steemj.protocol.AccountName;
-import eu.bittrade.libs.steemj.protocol.LegacyAsset;
-import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
-import eu.bittrade.libs.steemj.protocol.operations.AccountCreateOperation;
-import eu.bittrade.libs.steemj.protocol.operations.CommentOperation;
 
 /**
  * This class provides shows some common SteemJ commands.
@@ -72,24 +62,24 @@ public class SteemJUsageExample {
              * "steem-java-api-learned-to-speak-graphene-update-5" written by
              * "dez1337" using 100% of the defaultAccounts voting power.
              */
-            steemJ.vote(new AccountName("dez1337"), new Permlink("steem-java-api-learned-to-speak-graphene-update-5"),
+            /* steemJ.vote(new AccountName("dez1337"), new Permlink("steem-java-api-learned-to-speak-graphene-update-5"),
                     (short) 100);
 
             /*
              * Remove the vote made earlier.
-             */
-            steemJ.cancelVote(new AccountName("dez1337"),
-                    new Permlink("steem-java-api-learned-to-speak-graphene-update-5"));
+             */ 
+           // steemJ.cancelVote(new AccountName("dez1337"),
+             //       new Permlink("steem-java-api-learned-to-speak-graphene-update-5"));
 
             // Let the default account ("steemj") follow "cyriana"
-            steemJ.follow(new AccountName("cyriana"));
+           // steemJ.follow(new AccountName("cyriana"));
 
             // Let the default account ("steemj") unfollow "cyriana"
-            steemJ.unfollow(new AccountName("cyriana"));
+         //   steemJ.unfollow(new AccountName("cyriana"));
 
             // Let the default account ("steemj") resteem a post".
-            steemJ.reblog(new AccountName("dez1337"),
-                    new Permlink("steemj-v0-4-0-has-been-released-integrate-steem-into-your-java-project"));
+          //  steemJ.reblog(new AccountName("dez1337"),
+          //          new Permlink("steemj-v0-4-0-has-been-released-integrate-steem-into-your-java-project"));
 
             /*
              * Write a new post.
@@ -98,14 +88,14 @@ public class SteemJUsageExample {
              * "Test using SteemJ 0. ..... " Tags = "test", "dontvote"
              * 
              */
-            CommentOperation myNewPost = steemJ.createPost("Test of SteemJ 0.4.0",
-                    "Test using SteemJ 0.4.0 by @dez1337 with a link to "
-                            + "https://github.com/marvin-we/steem-java-api-wrapper "
-                            + "and an image ![SteemJV2Logo](https://imgur.com/bIhZlYT.png).",
-                    new String[] { "test", "dontvote" });
-            LOGGER.info(
-                    "SteemJ has generated some additional values for my new post. One good example is the permlink {} that I may need later on.",
-                    myNewPost.getPermlink().getLink());
+          //  CommentOperation myNewPost = steemJ.createPost("Test of SteemJ 0.4.0",
+          //          "Test using SteemJ 0.4.0 by @dez1337 with a link to "
+          //                  + "https://github.com/marvin-we/steem-java-api-wrapper "
+          //                  + "and an image ![SteemJV2Logo](https://imgur.com/bIhZlYT.png).",
+        //            new String[] { "test", "dontvote" });
+           // LOGGER.info(
+             //       "SteemJ has generated some additional values for my new post. One good example is the permlink {} that I may need later on.",
+             //       myNewPost.getPermlink().getLink());
 
             /*
              * Write a new comment.
@@ -115,28 +105,28 @@ public class SteemJUsageExample {
              * Content = "Test using SteemJ 0. ..... " Tags = "test"
              * 
              */
-            steemJ.createComment(new AccountName("steemj"), new Permlink("testofsteemj040"),
-                    "Example comment without a link but with a @user .", new String[] { "test" });
+            // steemJ.createComment(new AccountName("steemj"), new Permlink("testofsteemj040"),
+             //       "Example comment without a link but with a @user .", new String[] { "test" });
 
             /*
              * Delete the newly created post.
              */
-            steemJ.deletePostOrComment(myNewPost.getParentPermlink());
+            // steemJ.deletePostOrComment(myNewPost.getParentPermlink());
             
             /*
              * Let the default account transfer 1.0 SBD to @dez1337.
              */
-            steemJ.transfer(new AccountName("dez1337"), new LegacyAsset(new BigDecimal("1.000"), LegacyAssetSymbolType.STEEM), "Hello @dez1337 - I've send you one STEEM.");
+           // steemJ.transfer(new AccountName("dez1337"), new LegacyAsset(new BigDecimal("1.000"), LegacyAssetSymbolType.STEEM), "Hello @dez1337 - I've send you one STEEM.");
           
             /*
              * Let the default account delegate 10.0 VESTS to @dez1337.
              */
-            steemJ.delegateVestingShares(new AccountName("dez1337"), new LegacyAsset(10L, LegacyAssetSymbolType.VESTS));
+           // steemJ.delegateVestingShares(new AccountName("dez1337"), new LegacyAsset(10L, LegacyAssetSymbolType.VESTS));
             
             /*
              * Claim the rewards of the default account.
              */
-            steemJ.claimRewards();
+           // steemJ.claimRewards(); 
 
             // #########################################################################
             // ## EXECUTE READ OPERATIONS AGAINS THE NDOE ##############################
@@ -166,13 +156,7 @@ public class SteemJUsageExample {
 
 
             // Let's have a look at the account history of dez1337:
-            Map<UInteger, AppliedOperation> accountHistory = steemJ.getAccountHistory(new AccountName("dez1337"), ULong.valueOf(100),
-                    UInteger.valueOf(100));
-            if (accountHistory.get(0).getOp() instanceof AccountCreateOperation) {
-                AccountCreateOperation accountCreateOperation = (AccountCreateOperation) (accountHistory.get(0)
-                        .getOp());
-                LOGGER.info("The account {} has been created by {}.", "dez1337", accountCreateOperation.getCreator());
-            }
+           
             
             // Force an error response:
             steemJ.getAccountVotes(new AccountName("thisAcountDoesNotExistYet"));
@@ -181,8 +165,8 @@ public class SteemJUsageExample {
             LOGGER.error("The error code is {}", e.getCode());
         } catch (SteemCommunicationException e) {
             LOGGER.error("A communication error occured!", e);
-        } catch (SteemInvalidTransactionException e) {
-            LOGGER.error("There was a problem to sign a transaction.", e);
-        }
+        } //catch (SteemInvalidTransactionException e) {
+          //  LOGGER.error("There was a problem to sign a transaction.", e);
+       // }
     }
 }

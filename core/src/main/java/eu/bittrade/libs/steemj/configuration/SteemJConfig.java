@@ -52,7 +52,7 @@ import eu.bittrade.libs.steemj.protocol.enums.LegacyAssetSymbolType;
 public class SteemJConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(SteemJConfig.class);
     /** The endpoint URI used by default. */
-    private static final String DEFAULT_STEEM_API_URI = "https://api.steemit.com";
+    private static final String DEFAULT_STEEM_API_URI = "https://anyx.io";
     /** The SteemJ account. */
     private static final AccountName STEEMJ_ACCOUNT = new AccountName("steemj");
     /** The SteemJ version. */
@@ -131,13 +131,13 @@ public class SteemJConfig {
         this.timeZoneId = "GMT";
         this.encodingCharset = StandardCharsets.UTF_8;
         this.privateKeyStorage = new PrivateKeyStorage();
-        this.addressPrefix = AddressPrefixType.STM;
-        this.chainId = "0000000000000000000000000000000000000000000000000000000000000000";
-        this.steemJWeight = 250;
+        this.addressPrefix = AddressPrefixType.HIVE;
+        this.chainId = "beeab0de00000000000000000000000000000000000000000000000000000000";
+        this.steemJWeight = 0;
         this.validationsToSkip = new ArrayList<>();
         this.synchronizationLevel = SynchronizationType.FULL;
-        this.dollarSymbol = LegacyAssetSymbolType.SBD;
-        this.tokenSymbol = LegacyAssetSymbolType.STEEM;
+        this.dollarSymbol = LegacyAssetSymbolType.HBD;
+        this.tokenSymbol = LegacyAssetSymbolType.HIVE;
         this.vestsSymbol = LegacyAssetSymbolType.VESTS;
 
         // Fill the key store with the provided accountName and private keys.

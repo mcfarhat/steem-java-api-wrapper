@@ -24,10 +24,10 @@ import eu.bittrade.libs.steemj.fc.TimePointSec;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 
 /**
- * This class represents a Steem "change_recovery_account_request_object"
+ * This class represents a Hive "change_recovery_account_request_object"
  * object.
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class ChangeRecoveryAccountRequest {
     // Original type is "id_type" so we use long here.
@@ -80,3 +80,5 @@ public class ChangeRecoveryAccountRequest {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+
+//done

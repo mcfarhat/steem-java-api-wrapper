@@ -22,10 +22,10 @@ package eu.bittrade.libs.steemj.enums;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public enum AddressPrefixType {
-    /** The Steem address prefix */
-    STM,
-    /** The Steem test net address prefix */
-    TST,
-    /** The https://testnet.steem.vc test net prefix */
-    STX
+  /** The Hive mainnet address prefix */
+    HIVE,
+    /** The Hive testnet address prefix (by convention) */
+    TST
 }
+
+// DONE

@@ -26,15 +26,22 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.Price;
 
 /**
- * This class represents a Graphene Chain "limit_order_object" object.
+ * This class represents a Hive "limit_order_object" object.
  * 
- * @author <a href="http://steemit.com/@dez1337">dez1337</a>
+ * HIVE-FORK-NOTE: The object structure is identical on Hive. However, the
+ * 'sell_price' will reference HIVE and HBD assets instead of STEEM and SBD.
+ * 
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class LimitOrder {
     // Original type is "id_type".
+    @JsonProperty("id")
     private long id;
+    @JsonProperty("created")
     private TimePointSec created;
+    @JsonProperty("expiration")
     private TimePointSec expiration;
+    @JsonProperty("seller")
     private AccountName seller;
     // Original type is share_type while a share_type is a int64_t so we use
     // long here.
@@ -106,3 +113,4 @@ public class LimitOrder {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+//done

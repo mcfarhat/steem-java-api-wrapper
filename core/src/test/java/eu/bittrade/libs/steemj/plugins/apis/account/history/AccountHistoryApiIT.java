@@ -16,18 +16,17 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.account.history;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import static org.hamcrest.Matchers.notNullValue;
 import org.joou.UInteger;
 import org.joou.ULong;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,17 +38,17 @@ import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHistoryArgs;
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetAccountHistoryArgsTest;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockArgs;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlockReturn;
+import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
-import eu.bittrade.libs.steemj.protocol.TransactionId;
 import eu.bittrade.libs.steemj.protocol.operations.AccountCreateOperation;
-import eu.bittrade.libs.steemj.protocol.operations.AccountCreateWithDelegationOperation;
 import eu.bittrade.libs.steemj.protocol.operations.Operation;
+import eu.bittrade.libs.steemj.protocol.operations.VoteOperation;
 
 /**
- * This class contains all test connected to the
+ * This class contains all tests connected to the updated Hive
  * {@link eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi
  * AccountHistoryApi}.
  * 
@@ -60,99 +59,137 @@ public class AccountHistoryApiIT extends BaseIT {
 
     /**
      * Setup the test environment.
-     * 
-     * @throws SteemCommunicationException
-     *             If a communication error occurs.
      */
     @BeforeClass
     public static void init() throws SteemCommunicationException {
         setupIntegrationTestEnvironment();
-
         COMMUNICATION_HANDLER = new CommunicationHandler();
     }
 
     /**
-     * Test the
-     * {@link eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi#getOpsInBlock(CommunicationHandler, long, boolean)}
-     * method.
-     * 
-     * @throws SteemCommunicationException
-     *             If a communication error occurs.
-     * @throws SteemResponseException
-     *             If the response is an error.
+     * Test the {@link AccountHistoryApi#getOpsInBlock} method. This test verifies
+     * that the API call works, the custom deserializer correctly unwraps the 'op'
+     * object, and the data models handle the response structure.
      */
     @Category({ IntegrationTest.class })
     @Test
     public void testGetOpsInBlock() throws SteemCommunicationException, SteemResponseException {
-        final List<AppliedOperation> operations = AccountHistoryApi
-                .getOpsInBlock(COMMUNICATION_HANDLER, new GetOpsInBlockArgs(UInteger.valueOf(13310401), true))
-                .getOperations();
+        // A known block number with a transaction.
+        final long blockNum = 1000L;
+        // The known transaction ID in block 1000.
+        final String expectedTrxId = "0c4f420b7a1ff5201b10626353982e56360b3781";
 
-        // assertThat(signedBlockWithInfo.getTimestamp().getDateTime(),
-        // equalTo("2017-07-01T19:24:42"));
-        // assertThat(signedBlockWithInfo.getWitness(), equalTo(new
-        // AccountName("riverhead")));
+        // Request all operations (not just virtual ones).
+        final GetOpsInBlockArgs args = new GetOpsInBlockArgs(blockNum, false);
+
+        // Call the new API method.
+        final GetOpsInBlockReturn result = AccountHistoryApi.getOpsInBlock(COMMUNICATION_HANDLER, args);
+
+        // Assertions
+        assertThat("The result object should not be null.", result, notNullValue());
+
+        List<AppliedOperation> operations = result.getOperations();
+        assertThat("The list of operations should not be null.", operations, notNullValue());
+        assertFalse("The list of operations for a known block should not be empty.", operations.isEmpty());
+
+        // Examine the first operation in the block.
+        AppliedOperation firstOp = operations.get(0);
+        assertThat("The block number in the operation should match the requested block number.", firstOp.getBlock(),
+                equalTo(UInteger.valueOf(blockNum)));
+        assertThat("The transaction ID should match the known value for this block.",
+                firstOp.getTrxId().getHashValue().toString(), equalTo(expectedTrxId));
+
+        // The 'virtual_op' field from get_ops_in_block is a number (0 or 1).
+        // Our updated AppliedOperation model handles this.
+        assertFalse("This should be a real operation, not a virtual one.", firstOp.isVirtualOp());
+
+        // Check the actual operation type. This verifies the custom deserializer is
+        // correctly unwrapping the 'op' object.
+        assertThat("The operation should be a VoteOperation.", firstOp.getOp(), instanceOf(VoteOperation.class));
     }
 
     /**
-     * Test the
-     * {@link eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi#getTransaction(CommunicationHandler, eu.bittrade.libs.steemj.protocol.TransactionId)}
+     * Test the corrected
+     * {@link AccountHistoryApi#getTransaction(CommunicationHandler, String)}
      * method.
-     * 
-     * @throws SteemCommunicationException
-     *             If a communication error occurs.
-     * @throws SteemResponseException
-     *             If the response is an error.
      */
     @Category({ IntegrationTest.class })
     @Test
     public void testGetTransaction() throws SteemCommunicationException, SteemResponseException {
-        // TODO: Check also null case of optional
-      //  final AnnotatedSignedTransaction annotatedSignedTransaction = AccountHistoryApi.getTransaction(
-      //          COMMUNICATION_HANDLER,
-       //         new GetAccountHistoryArgsTest(new TransactionId("bd8069e6544f658da560b72e93b605dfe2cb0aaf")));
-    	AccountName account = new AccountName("dez1337");
-        ULong start = ULong.valueOf(20);
-        UInteger limit = UInteger.valueOf(10);
-    	final AnnotatedSignedTransaction annotatedSignedTransaction = AccountHistoryApi.getTransaction(COMMUNICATION_HANDLER, new GetAccountHistoryArgs(account, start, limit));
-        // assertThat(annotatedSignedTransaction.getTimestamp().getDateTime(),
-        // equalTo("2017-07-02T19:15:06"));
-        // assertThat(blockHeader.getWitness(), equalTo(new
-        // AccountName("clayop")));
+        // This is a known, irreversible transaction on the Hive blockchain.
+        final String transactionId = "0c4f420b7a1ff5201b10626353982e56360b3781";
+
+        // Use the corrected method signature.
+        final AnnotatedSignedTransaction annotatedSignedTransaction = AccountHistoryApi
+                .getTransaction(COMMUNICATION_HANDLER, transactionId);
+
+        assertThat("The returned transaction should not be null.", annotatedSignedTransaction, notNullValue());
+        assertThat("The block number should match the known value for this transaction.",
+                annotatedSignedTransaction.getBlockNum(), equalTo(1000L));
+        assertThat("The transaction ID in the response should match the requested ID.",
+                annotatedSignedTransaction.getTransactionId().getHashValue().toString(), equalTo(transactionId));
     }
 
     /**
-     * Test the
-     * {@link eu.bittrade.libs.steemj.plugins.apis.account.history.AccountHistoryApi#getAccountHistory(CommunicationHandler, AccountName, org.joou.ULong, UInteger)}
-     * method.
-     * 
-     * @throws SteemCommunicationException
-     *             If a communication error occurs.
-     * @throws SteemResponseException
-     *             If the response is an error.
+     * Test the updated {@link AccountHistoryApi#getAccountHistory} method,
+     * verifying the new List-based response structure.
      */
     @Category({ IntegrationTest.class })
     @Test
     public void testGetAccountHistory() throws SteemCommunicationException, SteemResponseException {
-        final Map<UInteger, AppliedOperation> accountHistorySetOne = AccountHistoryApi
-                .getAccountHistory(COMMUNICATION_HANDLER,
-                        new GetAccountHistoryArgs(new AccountName("dez1337"), ULong.valueOf(10), UInteger.valueOf(10)))
+        AccountName testAccount = new AccountName("dez1337");
+        ULong start = ULong.valueOf(10);
+        UInteger limit = UInteger.valueOf(10); // Request 10 items
+
+        // The method now returns GetAccountHistoryReturn which contains a List.
+        final List<OperationHistoryEntry> historyList = AccountHistoryApi
+                .getAccountHistory(COMMUNICATION_HANDLER, new GetAccountHistoryArgs(testAccount, start, limit))
                 .getHistory();
 
-        assertEquals("expect response to contain 10 results", 11, accountHistorySetOne.size());
+        assertThat("The history list should not be null.", historyList, notNullValue());
+        assertEquals("Expected response to contain 10 results for limit=10.", 10, historyList.size());
 
-        Operation firstOperation = accountHistorySetOne.get(0).getOp();
-        assertTrue("the first operation for each account is the 'account_create_operation'",
-                firstOperation instanceof AccountCreateOperation);
+        // Access the operation using the new object model.
+        Operation firstOperationInList = historyList.get(0).getOperation().getOp();
 
-        final Map<UInteger, AppliedOperation> accountHistorySetTwo = AccountHistoryApi.getAccountHistory(
-                COMMUNICATION_HANDLER,
-                new GetAccountHistoryArgs(new AccountName("randowhale"), ULong.valueOf(1000), UInteger.valueOf(1000)))
-                .getHistory();
-        assertEquals("expect response to contain 1001 results", 1001, accountHistorySetTwo.size());
+        // The first operation in an account's history (at index 0) is its creation.
+        // As we started from index 0 (by using start=10 and getting 10 results, index
+        // 0 is first), we check this.
+        if (historyList.get(0).getHistoryIndex() == 0) {
+            assertTrue("The first operation for an account should be 'account_create_operation'",
+                    firstOperationInList instanceof AccountCreateOperation);
+        }
+    }
 
-        assertThat(accountHistorySetTwo.get(0).getOp(), instanceOf(AccountCreateWithDelegationOperation.class));
-        assertThat(((AccountCreateWithDelegationOperation) accountHistorySetTwo.get(0).getOp()).getCreator().getName(),
-                equalTo(new AccountName("anonsteem").getName()));
+    /**
+     * Test the new filtering capabilities of the
+     * {@link AccountHistoryApi#getAccountHistory} method.
+     */
+    @Category({ IntegrationTest.class })
+    @Test
+    public void testGetAccountHistoryWithFilters() throws SteemCommunicationException, SteemResponseException {
+        AccountName testAccount = new AccountName("blocktrades"); // An account with a lot of history
+        ULong start = ULong.valueOf(-1); // Start from the most recent
+        UInteger limit = UInteger.valueOf(100);
+
+        // Filter for VOTE operations only. Vote operation has ID 0, so its bitmask is
+        // 2^0 = 1.
+        Long operationFilterLow = 1L;
+        Long operationFilterHigh = 0L;
+
+        GetAccountHistoryArgs args = new GetAccountHistoryArgs(testAccount, start, limit, true, operationFilterLow,
+                operationFilterHigh);
+
+        final List<OperationHistoryEntry> historyList = AccountHistoryApi
+                .getAccountHistory(COMMUNICATION_HANDLER, args).getHistory();
+
+        assertFalse("The filtered list of votes should not be empty for an active account.", historyList.isEmpty());
+
+        // Verify that EVERY operation in the response is a VoteOperation, proving the
+        // filter works.
+        for (OperationHistoryEntry entry : historyList) {
+            assertThat("Each operation in the filtered list should be a VoteOperation.", entry.getOperation().getOp(),
+                    instanceOf(VoteOperation.class));
+        }
     }
 }

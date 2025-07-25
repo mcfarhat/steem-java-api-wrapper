@@ -36,6 +36,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentBenefactorRewa
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentPayoutUpdateOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CommentRewardOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.CurationRewardOperation;
+import eu.bittrade.libs.steemj.protocol.operations.virtual.EffectiveCommentVoteOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillConvertRequestOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillOrderOperation;
 import eu.bittrade.libs.steemj.protocol.operations.virtual.FillTransferFromSavingsOperation;
@@ -54,9 +55,10 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote"),
+@JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote_operation"),
         @Type(value = CommentOperation.class, name = "comment"),
         @Type(value = TransferOperation.class, name = "transfer"),
+        @Type(value = TransferOperation.class, name = "transfer_operation"), // <-- ADD THIS LINE
         @Type(value = TransferToVestingOperation.class, name = "transfer_to_vesting"),
         @Type(value = WithdrawVestingOperation.class, name = "withdraw_vesting"),
         @Type(value = LimitOrderCreateOperation.class, name = "limit_order_create"),
@@ -73,6 +75,8 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = ReportOverProductionOperation.class, name = "report_over_production"),
         @Type(value = DeleteCommentOperation.class, name = "delete_comment"),
         @Type(value = CustomJsonOperation.class, name = "custom_json"),
+        @Type(value = CustomJsonOperation.class, name = "custom_json_operation"), // <-- ADD THIS LINE
+
         @Type(value = CommentOptionsOperation.class, name = "comment_options"),
         @Type(value = SetWithdrawVestingRouteOperation.class, name = "set_withdraw_vesting_route"),
         @Type(value = LimitOrderCreate2Operation.class, name = "limit_order_create2"),
@@ -94,10 +98,23 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = ResetAccountOperation.class, name = "reset_account"),
         @Type(value = SetResetAccountOperation.class, name = "set_reset_account"),
         @Type(value = ClaimRewardBalanceOperation.class, name = "claim_reward_balance"),
+        @Type(value = ClaimRewardBalanceOperation.class, name = "claim_reward_balance_operation"),
         @Type(value = DelegateVestingSharesOperation.class, name = "delegate_vesting_shares"),
         @Type(value = AccountCreateWithDelegationOperation.class, name = "account_create_with_delegation"),
         @Type(value = ClaimAccountOperation.class, name = "claim_account"),
-        @Type(value = CreateClaimedAccountOperation.class, name = "create_claimed_account"),
+        // ... other virtual ops ...
+@Type(value = CurationRewardOperation.class, name = "curation_reward_operation"),
+@Type(value = EffectiveCommentVoteOperation.class, name = "effective_comment_vote_operation"),
+@Type(value = FillConvertRequestOperation.class, name = "fill_convert_request_operation"),
+// ... rest of the list ...
+
+        // ### MODIFICATION FOR HIVE - START ###
+        // Changed "create_claimed_account" to the correct name "create_claimed_account_operation" to fix the typo.
+        @Type(value = CreateClaimedAccountOperation.class, name = "create_claimed_account_operation"),
+        // Added the new missing virtual operation "account_created_operation" from Hive.
+        @Type(value = AccountCreatedOperation.class, name = "account_created_operation"),
+        // ### MODIFICATION FOR HIVE - END ###
+        
         // Virtual Operations
         @Type(value = AuthorRewardOperation.class, name = "author_reward_operation"),
         @Type(value = CommentBenefactorRewardOperation.class, name = "comment_benefactor_reward_operation"),

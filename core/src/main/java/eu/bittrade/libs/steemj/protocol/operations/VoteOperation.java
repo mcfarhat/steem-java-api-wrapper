@@ -35,21 +35,17 @@ import eu.bittrade.libs.steemj.exceptions.SteemInvalidTransactionException;
 import eu.bittrade.libs.steemj.interfaces.SignatureObject;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.util.SteemJUtils;
-
 /**
  * This class represents the Steem "vote_operation" object.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
-public class VoteOperation extends Operation {
-    @JsonProperty("voter")
+public class VoteOperation extends Operation { 
     private AccountName voter;
-    @JsonProperty("author")
     private AccountName author;
-    @JsonProperty("permlink")
     private Permlink permlink;
-    @JsonProperty("weight")
     private short weight;
+    
 
     /**
      * Create a new vote operation to vote for a comment or a post.
@@ -67,17 +63,31 @@ public class VoteOperation extends Operation {
      * @throws InvalidParameterException
      *             If one of the arguments does not fulfill the requirements.
      */
-    @JsonCreator
-    public VoteOperation(@JsonProperty("voter") AccountName voter, @JsonProperty("author") AccountName author,
-            @JsonProperty("permlink") Permlink permlink, @JsonProperty("weight") short weight) {
+    /**
+     * This constructor is for creating new operations within the code.
+     * The @JsonCreator has been removed.
+     */
+    public VoteOperation(AccountName voter, AccountName author, Permlink permlink, short weight) {
         super(false);
-        // Set default values:
         this.setVoter(voter);
         this.setAuthor(author);
         this.setPermlink(permlink);
         this.setWeight(weight);
     }
+    
 
+    /**
+     * This new constructor is used exclusively by the JSON parser to handle the
+     * nested "value" object sent by the Hive API.
+     */
+    @JsonCreator
+    public VoteOperation(@JsonProperty("value") Map<String, Object> value) {
+        super(false);
+        this.setVoter(new AccountName((String) value.get("voter")));
+        this.setAuthor(new AccountName((String) value.get("author")));
+        this.setPermlink(new Permlink((String) value.get("permlink")));
+        this.setWeight(((Number) value.get("weight")).shortValue());
+    }
     /**
      * Like {@link #VoteOperation(AccountName, AccountName, Permlink, short)},
      * but will use a default weight of '0'.

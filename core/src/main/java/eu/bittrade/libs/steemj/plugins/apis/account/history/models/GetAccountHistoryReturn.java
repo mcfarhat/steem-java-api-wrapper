@@ -16,25 +16,25 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.account.history.models;
 
-import java.util.Map;
+import java.util.List; // Changed from Map to List
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.joou.UInteger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import eu.bittrade.libs.steemj.plugins.apis.account.history.models.deserializer.AppliedOperationHashMapDeserializer;
+// The old deserializer is no longer needed. A new one will be attached to OperationHistoryEntry.
+// import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+// import eu.bittrade.libs.steemj.plugins.apis.account.history.models.deserializer.AppliedOperationHashMapDeserializer;
 
 /**
- * This class implements the Steem "get_account_history_return" object.
+ * This class implements the Hive "get_account_history_return" object.
  * 
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public class GetAccountHistoryReturn {
+    // MODIFIED: The 'history' field is now a List of a new type, OperationHistoryEntry,
+    // to correctly model the API's response structure: [ [index, operation], ... ]
     @JsonProperty("history")
-    @JsonDeserialize(using = AppliedOperationHashMapDeserializer.class)
-    private Map<UInteger, AppliedOperation> history;
+    private List<OperationHistoryEntry> history;
 
     /**
      * This object is only used to wrap the JSON response in a POJO, so
@@ -44,14 +44,13 @@ public class GetAccountHistoryReturn {
     }
 
     /**
-     * Get the requested history for the requested account. The history is
-     * represented by a list of all operations ever made by an account. The map
-     * <code>key</code> represents the <code>id</code> of the operation and the
-     * map <code>value</code> is the operation itself.
+     * Get the requested history for the account. The history is represented by a
+     * list of all operations. Each entry in the list contains the operation's
+     * sequence number in the account's history and the operation object itself.
      * 
-     * @return A map of operations and their id.
+     * @return A list of account history entries.
      */
-    public Map<UInteger, AppliedOperation> getHistory() {
+    public List<OperationHistoryEntry> getHistory() {
         return history;
     }
 
@@ -59,5 +58,4 @@ public class GetAccountHistoryReturn {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-
 }

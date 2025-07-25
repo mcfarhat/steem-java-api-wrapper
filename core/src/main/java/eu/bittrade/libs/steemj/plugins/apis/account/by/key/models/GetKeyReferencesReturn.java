@@ -16,6 +16,7 @@
  */
 package eu.bittrade.libs.steemj.plugins.apis.account.by.key.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -32,19 +33,20 @@ import eu.bittrade.libs.steemj.protocol.AccountName;
  */
 public class GetKeyReferencesReturn {
     @JsonProperty("accounts")
-    private List<AccountName> accounts;
+    private List<List<AccountName>> accounts;
 
     /**
      * This object is only used to wrap the JSON response in a POJO, so
      * therefore this class should not be instantiated.
      */
     private GetKeyReferencesReturn() {
+        this.accounts = new ArrayList<>();
     }
 
     /**
      * @return the accounts
      */
-    public List<AccountName> getAccounts() {
+    public List<List<AccountName>> getAccounts() {
         return accounts;
     }
 

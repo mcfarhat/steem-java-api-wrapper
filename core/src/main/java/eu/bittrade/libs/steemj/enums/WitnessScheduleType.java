@@ -22,5 +22,22 @@ package eu.bittrade.libs.steemj.enums;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public enum WitnessScheduleType {
-    TOP19, TIMESHARE, MINER, NONE
+     /**
+     * A witness in the top 20 who has a guaranteed block production slot each round.
+     */
+    TOP20,
+    /**
+     * A backup witness who shares a slot with other backups.
+     */
+    TIMESHARE,
+    /**
+     * A placeholder for an account that is not in the witness schedule.
+     */
+    NONE
+    /*
+     * Note: The MINER type has been removed as Hive is a pure DPoS
+     * blockchain and does not have a proof-of-work miner queue. The
+     * TOP19 type has been updated to TOP20 to reflect Hive's consensus.
+     */
 }
+//done

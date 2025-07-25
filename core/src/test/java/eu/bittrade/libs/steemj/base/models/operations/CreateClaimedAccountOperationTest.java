@@ -1,13 +1,12 @@
 package eu.bittrade.libs.steemj.base.models.operations;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.BeforeClass;
 
 import eu.bittrade.crypto.core.CryptoUtils;
@@ -79,9 +78,8 @@ public class CreateClaimedAccountOperationTest extends BaseTransactionalUT {
         owner.setKeyAuths(ownerKeyAuth);
         owner.setWeightThreshold(1);
 
-        createClaimedAccountOperation = new CreateClaimedAccountOperation(creator, fee, newAccountName, owner, active, posting,
-                memoKey, jsonMetadata);
-
+createClaimedAccountOperation = new CreateClaimedAccountOperation(creator, newAccountName, owner, active, posting,
+                memoKey, jsonMetadata, new ArrayList<>());
         ArrayList<Operation> operations = new ArrayList<>();
         operations.add(createClaimedAccountOperation);
 

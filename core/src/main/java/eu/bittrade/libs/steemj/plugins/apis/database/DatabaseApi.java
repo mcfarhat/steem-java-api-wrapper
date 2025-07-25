@@ -17,6 +17,7 @@
 package eu.bittrade.libs.steemj.plugins.apis.database;
 
 import java.util.List;
+import java.util.Map;
 
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
@@ -60,7 +61,6 @@ import eu.bittrade.libs.steemj.plugins.apis.database.models.GetPotentialSignatur
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetPotentialSignaturesReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetRequiredSignaturesArgs;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetRequiredSignaturesReturn;
-import eu.bittrade.libs.steemj.plugins.apis.database.models.GetSmtNextIdentifierReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetTransactionHexArgs;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.GetTransactionHexReturn;
 import eu.bittrade.libs.steemj.plugins.apis.database.models.HardforkProperty;
@@ -138,11 +138,12 @@ public class DatabaseApi {
      *             <li>If the Server returned an error object.</li>
      *             </ul>
      */
-    public static Config getConfig(CommunicationHandler communicationHandler)
+    public static Map<String, Object> getConfig(CommunicationHandler communicationHandler)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_CONFIG, null);
 
-        return communicationHandler.performRequest(requestObject, Config.class).get(0);
+        // We now tell the parser to expect a simple Map, not the broken Config class.
+        return communicationHandler.performRequest(requestObject, Map.class).get(0);
     }
 
     /**
@@ -682,7 +683,7 @@ public class DatabaseApi {
             ListSbdConversionRequestsArgs listSbdConversionRequestsArgs)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.LIST_SBD_CONVERSION_REQUESTS, listSbdConversionRequestsArgs);
+                RequestMethod.LIST_HBD_CONVERSION_REQUESTS, listSbdConversionRequestsArgs);
 
         return communicationHandler.performRequest(requestObject, ListSbdConversionRequestsReturn.class).get(0);
     }
@@ -699,7 +700,7 @@ public class DatabaseApi {
             FindSbdConversionRequestsArgs findSbdConversionRequestsArgs)
             throws SteemCommunicationException, SteemResponseException {
         JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.FIND_SBD_CONVERSION_REQUESTS, findSbdConversionRequestsArgs);
+                RequestMethod.FIND_HBD_CONVERSION_REQUESTS, findSbdConversionRequestsArgs);
 
         return communicationHandler.performRequest(requestObject, FindSbdConversionRequestsReturn.class).get(0);
     }
@@ -959,11 +960,5 @@ public class DatabaseApi {
      * @throws SteemCommunicationException
      * @throws SteemResponseException
      */
-    public static GetSmtNextIdentifierReturn getSmtNextIdentifier(CommunicationHandler communicationHandler)
-            throws SteemCommunicationException, SteemResponseException {
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
-                RequestMethod.GET_SMT_NEXT_IDENTIFIER, null);
-
-        return communicationHandler.performRequest(requestObject, GetSmtNextIdentifierReturn.class).get(0);
-    }
+    
 }

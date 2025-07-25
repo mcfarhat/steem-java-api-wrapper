@@ -8,7 +8,8 @@
  * 
  *     SteemJ is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  * 
  *     You should have received a copy of the GNU General Public License
@@ -23,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 
 /**
- * This class represents the Steem data type "witness_vote_object".
+ * This class represents the Hive data type "witness_vote_object".
  * 
- * @author <a href="http://Steemit.com/@dez1337">dez1337</a>
+ * @author <a href="https://hive.blog/@dez1337">dez1337</a>
  */
 public class WitnessVote {
     // Original type is "id_type".
@@ -69,3 +70,5 @@ public class WitnessVote {
         return ToStringBuilder.reflectionToString(this);
     }
 }
+
+//done
