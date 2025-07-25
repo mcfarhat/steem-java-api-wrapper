@@ -58,6 +58,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
 @JsonSubTypes({ @Type(value = VoteOperation.class, name = "vote_operation"),
         @Type(value = CommentOperation.class, name = "comment"),
         @Type(value = TransferOperation.class, name = "transfer"),
+        @Type(value = TransferOperation.class, name = "transfer_operation"), // <-- ADD THIS LINE
         @Type(value = TransferToVestingOperation.class, name = "transfer_to_vesting"),
         @Type(value = WithdrawVestingOperation.class, name = "withdraw_vesting"),
         @Type(value = LimitOrderCreateOperation.class, name = "limit_order_create"),
@@ -74,7 +75,12 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = ReportOverProductionOperation.class, name = "report_over_production"),
         @Type(value = DeleteCommentOperation.class, name = "delete_comment"),
         @Type(value = CustomJsonOperation.class, name = "custom_json"),
+
         @Type(value = CustomJsonOperation.class, name = "custom_json_operation"),
+
+        @Type(value = CustomJsonOperation.class, name = "custom_json_operation"), // <-- ADD THIS LINE
+
+
         @Type(value = CommentOptionsOperation.class, name = "comment_options"),
         @Type(value = SetWithdrawVestingRouteOperation.class, name = "set_withdraw_vesting_route"),
         @Type(value = LimitOrderCreate2Operation.class, name = "limit_order_create2"),
@@ -96,6 +102,7 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = ResetAccountOperation.class, name = "reset_account"),
         @Type(value = SetResetAccountOperation.class, name = "set_reset_account"),
         @Type(value = ClaimRewardBalanceOperation.class, name = "claim_reward_balance"),
+        @Type(value = ClaimRewardBalanceOperation.class, name = "claim_reward_balance_operation"),
         @Type(value = DelegateVestingSharesOperation.class, name = "delegate_vesting_shares"),
         @Type(value = AccountCreateWithDelegationOperation.class, name = "account_create_with_delegation"),
         @Type(value = ClaimAccountOperation.class, name = "claim_account"),

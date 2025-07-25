@@ -20,7 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.List;
-
+import java.util.Map; // <-- ADDED IMPORT
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -40,31 +41,16 @@ import eu.bittrade.libs.steemj.util.SteemJUtils;
  * @author <a href="http://steemit.com/@dez1337">dez1337</a>
  */
 public class TransferOperation extends AbstractTransferOperation {
-    @JsonProperty("memo")
+    // The @JsonProperty annotation has been REMOVED from this field.
     private String memo;
 
     /**
-     * Create a new transfer operation. Use this operation to transfer an asset
-     * from one account to another.
-     * 
-     * @param from
-     *            The account to transfer the vestings from (see
-     *            {@link #setFrom(AccountName)}).
-     * @param to
-     *            The account that will receive the transfered vestings (see
-     *            {@link #setTo(AccountName)}).
-     * @param amount
-     *            The amount of vests to transfer (see
-     *            {@link #setAmount(LegacyAsset)}).
-     * @param memo
-     *            An additional message added to the operation (see
-     *            {@link #setMemo(String)}).
-     * @throws InvalidParameterException
-     *             If one of the arguments does not fulfill the requirements.
+     * This is the original constructor, used for creating new operations in code.
+     * The @JsonCreator annotation has been REMOVED from here.
+     * The @JsonProperty annotations on parameters have also been removed.
      */
-    @JsonCreator
-    public TransferOperation(@JsonProperty("from") AccountName from, @JsonProperty("to") AccountName to,
-            @JsonProperty("amount") LegacyAsset amount, @JsonProperty("memo") String memo) {
+    public TransferOperation(AccountName from, AccountName to,
+            LegacyAsset amount, String memo) {
         super(false);
 
         this.setFrom(from);
@@ -74,36 +60,37 @@ public class TransferOperation extends AbstractTransferOperation {
     }
 
     /**
-     * Set the <code>amount</code> of that will be send.
-     * 
-     * @param amount
-     *            The <code>amount</code> of that will be send.
-     * @throws InvalidParameterException
-     *             If the <code>amount</code> is null, of symbol type VESTS or
-     *             less than 1.
+     * This new constructor is used exclusively by the JSON parser to handle the
+     * nested "value" object sent by the Hive API.
      */
+    @JsonCreator
+    public TransferOperation(@JsonProperty("value") Map<String, Object> value) {
+        super(false);
+        this.setFrom(new AccountName((String) value.get("from")));
+        this.setTo(new AccountName((String) value.get("to")));
+
+        // ######################################################################
+        // ### THIS IS THE CORRECTED PART THAT WILL WORK ###
+        // ######################################################################
+        // We use an ObjectMapper to correctly convert the nested 'amount' map
+        // into a LegacyAsset object. This is the standard, reliable way.
+        ObjectMapper mapper = new ObjectMapper();
+        LegacyAsset amountAsset = mapper.convertValue(value.get("amount"), LegacyAsset.class);
+        this.setAmount(amountAsset);
+        // ######################################################################
+
+        this.setMemo((String) value.get("memo"));
+    }
+
     @Override
     public void setAmount(LegacyAsset amount) {
         this.amount = SteemJUtils.setIfNotNull(amount, "The amount can't be null.");
     }
 
-    /**
-     * Get the message added to this operation.
-     * 
-     * @return The message added to this operation.
-     */
     public String getMemo() {
         return memo;
     }
 
-    /**
-     * Add an additional message to this operation.
-     * 
-     * @param memo
-     *            The message added to this operation.
-     * @throws InvalidParameterException
-     *             If the <code>memo</code> has more than 2048 characters.
-     */
     public void setMemo(String memo) {
         this.memo = memo;
     }
