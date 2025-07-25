@@ -11,10 +11,7 @@ import org.slf4j.Logger; // Needed for getKeyReferences test
 import org.slf4j.LoggerFactory;
 
 import eu.bittrade.libs.steemj.SteemJ;
-import eu.bittrade.libs.steemj.communication.jrpc.JsonRPCRequest;
 import eu.bittrade.libs.steemj.configuration.SteemJConfig;
-import eu.bittrade.libs.steemj.enums.RequestMethod;
-import eu.bittrade.libs.steemj.enums.SteemApiType;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.AppliedOperation;
@@ -217,13 +214,14 @@ public class GetMyHiveData {
             }
             LOGGER.info("--------------------------------------------------------------------");
             // <<< END OF NEW SECTION for getOpsInBlock >>>
-                       // 5. <<< NEW SECTION: TESTING account_history_api.get_transaction >>>
+                       // <<< START of modified section >>>
             LOGGER.info("--------------------------------------------------------------------");
             LOGGER.info("Attempting to test account_history_api.get_transaction...");
 
             try {
-                // First, get the most recent history for an active account (e.g., your account).
-                // This ensures we get a transaction ID that the node has indexed.
+                // -----------------------------------------------------------------
+                // Step 1 & 2: Test with a VALID, recent transaction (your original code)
+                // -----------------------------------------------------------------
                 LOGGER.info("Step 1: Fetching recent history to get a valid transaction ID...");
                 ULong startFrom = ULong.valueOf(-1);
                 UInteger limit = UInteger.valueOf(5); // Get a few recent operations
@@ -232,11 +230,10 @@ public class GetMyHiveData {
                 
                 TransactionId transactionToTest = null;
                 if (recentHistory != null && !recentHistory.isEmpty()) {
-                    // Find the first real transaction in the list (not a virtual operation)
                     for(OperationHistoryEntry entry : recentHistory) {
                         if (!entry.getOperation().isVirtualOp()) {
                             transactionToTest = entry.getOperation().getTrxId();
-                            break; // We found one, stop looping
+                            break;
                         }
                     }
                 }
@@ -244,12 +241,7 @@ public class GetMyHiveData {
                 if (transactionToTest != null) {
                     LOGGER.info("Step 2: Found a recent transaction ID to test: {}", transactionToTest);
                     LOGGER.info("Now calling getTransaction with this ID...");
-
     
-                    JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.ACCOUNT_HISTORY_API, RequestMethod.GET_TRANSACTION,
-                            transactionToTest.toString());
-                            
-                    // We need a way to call this. Let's add a temporary helper in SteemJ for this test.
                     AnnotatedSignedTransaction transactionDetails = steemJ.getHistoryTransaction(transactionToTest);
 
                     if (transactionDetails != null) {
@@ -263,11 +255,40 @@ public class GetMyHiveData {
                     LOGGER.warn("Could not find a recent, non-virtual transaction to test with.");
                 }
 
+                // -----------------------------------------------------------------
+                                // -----------------------------------------------------------------
+                // Step 3: Test with the KNOWN MALFORMED transaction ID
+                // -----------------------------------------------------------------
+                LOGGER.info("---");
+                LOGGER.info("Step 3: Testing a specific transaction that previously failed (custom_json_operation)...");
+                
+                String formerlyMalformedTxIdString = "1ef64a46f52dd539e77ea5d623ae1296e1fbfd9d";
+                TransactionId formerlyMalformedTxId = new TransactionId(formerlyMalformedTxIdString);
+                LOGGER.info("Attempting to fetch transaction: {}", formerlyMalformedTxIdString);
+
+                try {
+                    AnnotatedSignedTransaction transactionDetails = steemJ.getHistoryTransaction(formerlyMalformedTxId);
+                    
+                    // After our fix, this is now the EXPECTED outcome.
+                    if (transactionDetails != null) {
+                        LOGGER.info("SUCCESS: The library correctly processed the transaction with the 'custom_json_operation' type.");
+                        LOGGER.info("  - Transaction ID: {}", transactionDetails.getTransactionId());
+                        LOGGER.info("  - Block Number: {}", transactionDetails.getBlockNum());
+                    } else {
+                         // This would now be a real failure.
+                         LOGGER.error("FAILURE: The getTransaction call for the fixed TX returned null.");
+                    }
+                } catch (Exception e) {
+                    // If we get here, it means our fix in the core library did NOT work.
+                    LOGGER.error("FAILURE: The fix did not work. The call for the transaction still failed.", e);
+                }
+
             } catch (Exception e) {
+                // This outer catch handles any truly unexpected errors from the entire test section.
                 LOGGER.error("An unexpected error occurred during the account_history_api.get_transaction test: {}", e.getMessage(), e);
             }
             LOGGER.info("--------------------------------------------------------------------");
-            // <<< END OF NEW SECTION >>>
+            // <<< END of modified section >>>
 
             LOGGER.info("GetMyHiveData sample finished all processing.");
 
