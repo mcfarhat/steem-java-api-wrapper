@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import eu.bittrade.libs.steemj.BaseIT;
 import eu.bittrade.libs.steemj.IntegrationTest;
+import eu.bittrade.libs.steemj.SteemJ;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
 import eu.bittrade.libs.steemj.exceptions.SteemCommunicationException;
 import eu.bittrade.libs.steemj.exceptions.SteemResponseException;
@@ -43,6 +44,7 @@ import eu.bittrade.libs.steemj.plugins.apis.account.history.models.GetOpsInBlock
 import eu.bittrade.libs.steemj.plugins.apis.account.history.models.OperationHistoryEntry;
 import eu.bittrade.libs.steemj.protocol.AccountName;
 import eu.bittrade.libs.steemj.protocol.AnnotatedSignedTransaction;
+import eu.bittrade.libs.steemj.protocol.TransactionId;
 import eu.bittrade.libs.steemj.protocol.operations.AccountCreateOperation;
 import eu.bittrade.libs.steemj.protocol.operations.Operation;
 import eu.bittrade.libs.steemj.protocol.operations.VoteOperation;
@@ -108,26 +110,37 @@ public class AccountHistoryApiIT extends BaseIT {
         assertThat("The operation should be a VoteOperation.", firstOp.getOp(), instanceOf(VoteOperation.class));
     }
 
-    /**
-     * Test the corrected
-     * {@link AccountHistoryApi#getTransaction(CommunicationHandler, String)}
-     * method.
+      /**
+     * Test the corrected {@link SteemJ#getTransaction(TransactionId)} method.
+     * This test validates that the method can fetch a real transaction from the
+     * Hive blockchain using the condenser_api.
      */
     @Category({ IntegrationTest.class })
     @Test
     public void testGetTransaction() throws SteemCommunicationException, SteemResponseException {
         // This is a known, irreversible transaction on the Hive blockchain.
-        final String transactionId = "0c4f420b7a1ff5201b10626353982e56360b3781";
+        final String transactionIdString = "0c4f420b7a1ff5201b10626353982e56360b3781";
+        // This is the CORRECT block number for the transaction above on Hive.
+        final long expectedBlockNum = 58734311L; 
 
-        // Use the corrected method signature.
-        final AnnotatedSignedTransaction annotatedSignedTransaction = AccountHistoryApi
-                .getTransaction(COMMUNICATION_HANDLER, transactionId);
+        // 1. Create the required TransactionId object for our new method.
+        final TransactionId transactionToFetch = new TransactionId(transactionIdString);
 
-        assertThat("The returned transaction should not be null.", annotatedSignedTransaction, notNullValue());
+        // 2. Call the new method on an instance of the SteemJ class.
+        //    (Assuming your test class has a 'steemJ' object initialized).
+        final AnnotatedSignedTransaction transactionDetails = steemJ.getTransaction(transactionToFetch);
+
+        // 3. Assert the results are correct.
+        assertThat("The returned transaction should not be null.", transactionDetails, notNullValue());
+        
+        // Assert against the correct block number.
         assertThat("The block number should match the known value for this transaction.",
-                annotatedSignedTransaction.getBlockNum(), equalTo(1000L));
+                transactionDetails.getBlockNum(), equalTo(expectedBlockNum));
+                
+        // Assert that the returned transaction ID matches the one we requested.
+        // We use .getHash() which is the correct method from the Ripemd160 parent class.
         assertThat("The transaction ID in the response should match the requested ID.",
-                annotatedSignedTransaction.getTransactionId().getHashValue().toString(), equalTo(transactionId));
+                transactionDetails.getTransactionId().getHashValue(), equalTo(transactionIdString));
     }
 
     /**

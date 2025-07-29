@@ -75,7 +75,11 @@ import eu.bittrade.libs.steemj.protocol.operations.virtual.ShutdownWitnessOpeart
         @Type(value = ReportOverProductionOperation.class, name = "report_over_production"),
         @Type(value = DeleteCommentOperation.class, name = "delete_comment"),
         @Type(value = CustomJsonOperation.class, name = "custom_json"),
+
+        @Type(value = CustomJsonOperation.class, name = "custom_json_operation"),
+
         @Type(value = CustomJsonOperation.class, name = "custom_json_operation"), // <-- ADD THIS LINE
+
 
         @Type(value = CommentOptionsOperation.class, name = "comment_options"),
         @Type(value = SetWithdrawVestingRouteOperation.class, name = "set_withdraw_vesting_route"),
