@@ -193,12 +193,14 @@ public class DatabaseApi {
      *             </ul>
      */
     public static WitnessSchedule getWitnessSchedule(CommunicationHandler communicationHandler)
-            throws SteemCommunicationException, SteemResponseException {
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_WITNESS_SCHEDULE,
-                null);
+        throws SteemCommunicationException, SteemResponseException {
+    
+    // This API call takes no parameters.
+    JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
+        RequestMethod.GET_WITNESS_SCHEDULE, new java.util.HashMap<>());
 
-        return communicationHandler.performRequest(requestObject, WitnessSchedule.class).get(0);
-    }
+    return communicationHandler.performRequest(requestObject, WitnessSchedule.class).get(0);
+}
 
     /**
      * @param communicationHandler
