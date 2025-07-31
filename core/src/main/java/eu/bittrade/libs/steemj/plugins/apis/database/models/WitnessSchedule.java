@@ -17,6 +17,7 @@
 package eu.bittrade.libs.steemj.plugins.apis.database.models;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -39,7 +40,7 @@ public class WitnessSchedule {
     @JsonProperty("next_shuffle_block_num")
     private int nextShuffleBlockNum;
     @JsonProperty("current_shuffled_witnesses")
-    private String currentShuffledWitnesses;
+    private List<String> currentShuffledWitnesses;
     // Original type is "uint8_t".
     @JsonProperty("num_scheduled_witnesses")
     private short numScheduledWitnesses;
@@ -105,7 +106,7 @@ public class WitnessSchedule {
     /**
      * @return the currentShuffledWitnesses
      */
-    public String getCurrentShuffledWitnesses() {
+    public List getCurrentShuffledWitnesses() {
         return currentShuffledWitnesses;
     }
 

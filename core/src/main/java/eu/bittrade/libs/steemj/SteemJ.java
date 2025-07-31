@@ -297,8 +297,8 @@ public class SteemJ {
         return null;
     }
     public WitnessSchedule getWitnessSchedule() throws SteemCommunicationException, SteemResponseException {
-        return null;
-    }
+    return DatabaseApi.getWitnessSchedule(SteemJ.communicationHandler);
+}
     public List<String> lookupAccounts(String pattern, int limit) throws SteemCommunicationException, SteemResponseException {
         return null;
     }
