@@ -18,6 +18,9 @@ package eu.bittrade.libs.steemj.plugins.apis.database;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import eu.bittrade.libs.steemj.base.models.FeedHistory;
 import eu.bittrade.libs.steemj.communication.CommunicationHandler;
 import eu.bittrade.libs.steemj.communication.jrpc.JsonRPCRequest;
@@ -359,13 +362,32 @@ public class DatabaseApi {
      *             <li>If the Server returned an error object.</li>
      *             </ul>
      */
-    public static List<AccountName> getActiveWitnesses(CommunicationHandler communicationHandler)
-            throws SteemCommunicationException, SteemResponseException {
-        JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API, RequestMethod.GET_ACTIVE_WITNESSES,
-                null);
+    /**
+ * Helper class for the JSON parser to understand the nested response from
+ * get_active_witnesses.
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+private static class GetActiveWitnessesReturn {
+    @JsonProperty("witnesses")
+    public List<AccountName> witnesses;
+}
 
-        return communicationHandler.performRequest(requestObject, AccountName.class);
-    }
+/**
+ * Get the list of active witnesses.
+ * ... (rest of javadoc) ...
+ */
+public static List<AccountName> getActiveWitnesses(CommunicationHandler communicationHandler)
+        throws SteemCommunicationException, SteemResponseException {
+    
+    JsonRPCRequest requestObject = new JsonRPCRequest(SteemApiType.DATABASE_API,
+            RequestMethod.GET_ACTIVE_WITNESSES, new java.util.HashMap<>());
+
+    // Tell the parser to expect the nested GetActiveWitnessesReturn object.
+    GetActiveWitnessesReturn result = communicationHandler
+            .performRequest(requestObject, GetActiveWitnessesReturn.class).get(0);
+
+    return result.witnesses;
+}
 
     /**
      * 
